@@ -11,6 +11,7 @@ services:
       - ${TVSHOWSDIR}:/mnt/data/tvshows
     networks:
       - trafiek_network
+
   couchpotato:
     build: ./couchpotato
     labels:
@@ -22,6 +23,7 @@ services:
       - ${MOVIESDIR}:/mnt/data/movies
     networks:
       - trafiek_network
+
   nzbget:
     build: ./nzbget
     labels:
@@ -31,6 +33,7 @@ services:
       - ${NZBSDIR}:/mnt/data
     networks:
       - trafiek_network
+
   transmission:
     build: ./transmission
     labels:
@@ -40,6 +43,7 @@ services:
       - ${TORRENTSDIR}:/mnt/data
     networks:
       - trafiek_network
+
 networks:
   trafiek_network:
     external:
