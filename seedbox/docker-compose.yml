@@ -1,0 +1,46 @@
+version: '2'
+services:
+  sickrage:
+    build: ./sickrage
+    labels:
+      - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
+      - traefik.frontend.entryPoints=http,https
+    volumes:
+      - ${NZBSDIR}:/mnt/data/downloads/nzbgs
+      - ${TORRENTSDIR}:/mnt/data/downloads/torrents
+      - ${TVSHOWSDIR}:/mnt/data/tvshows
+    networks:
+      - trafiek_network
+  couchpotato:
+    build: ./couchpotato
+    labels:
+      - traefik.frontend.rule=Host:couchpotato.${DOMAIN}
+      - traefik.frontend.entryPoints=http,https
+    volumes:
+      - ${NZBSDIR}:/mnt/data/downloads/nzbs
+      - ${TORRENTSDIR}:/mnt/data/downloads/torrents
+      - ${MOVIESDIR}:/mnt/data/movies
+    networks:
+      - trafiek_network
+  nzbget:
+    build: ./nzbget
+    labels:
+      - traefik.frontend.rule=Host:nzbget.${DOMAIN}
+      - traefik.frontend.entryPoints=http,https
+    volumes:
+      - ${NZBSDIR}:/mnt/data
+    networks:
+      - trafiek_network
+  transmission:
+    build: ./transmission
+    labels:
+      - traefik.frontend.rule=Host:transmission.${DOMAIN}
+      - traefik.frontend.entryPoints=http,https
+    volumes:
+      - ${TORRENTSDIR}:/mnt/data
+    networks:
+      - trafiek_network
+networks:
+  trafiek_network:
+    external:
+      name: traefik_network

@@ -1,0 +1,51 @@
+FROM alpine:latest
+MAINTAINER Alexandre ACEBEDO
+
+ENV TRANSMISSION_USER       transmission
+
+ARG TRANSMISSION_UID
+ENV TRANSMISSION_UID        ${TRANSMISSION_UID:-1000}
+
+ENV TRANSMISSION_GROUP      transmission
+
+ARG TRANSMISSION_GID
+ENV TRANSMISSION_GID        ${TRANSMISSION_GID:-1000}
+
+ARG TRANSMISSION_PORT
+ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-8080}
+
+ARG TRANSMISSION_PORT
+ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-8080}
+
+ARG TRANSMISSION_DIR
+ENV TRANSMISSION_DIR       ${TRANSMISSION_DATADIR:-/var/lib/transmission}
+
+ENV DOCKERIZE_VERSION        0.2.0
+ENV DOCKERIZE_ARCH           amd64
+
+RUN apk update
+RUN apk add git unzip unrar wget vim tar zsh openssl transmission transmission-daemon ca-certificates
+
+RUN rm -rf /usr/share/transmission/web
+RUN git clone https://github.com/endor/kettu.git /usr/share/transmission/web
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
+RUN rm -rf /tmp/dockerize.tar.gz
+
+RUN mkdir -p /etc/transmission-daemon/
+COPY ./files/settings.conf.tmpl /etc/transmission-daemon/settings.conf.tmpl
+
+RUN addgroup -g ${TRANSMISSION_GID} -S ${TRANSMISSION_GROUP}
+#RUN adduser -G ${TRANSMISSION_GROUP} -u ${TRANSMISSION_UID} -S -H ${TRANSMISSION_USER} 
+RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} /etc/transmission-daemon 
+
+EXPOSE ${TRANSMISSION_PORT}
+
+#USER ${TRANSMISSION_USER} 
+
+#ENTRYPOINT ["dockerize", "-template", "/etc/transmission-daemon/settings.conf.tmpl:/etc/transmission-daemon/settings.conf", "transmission-daemon"]
+
+
+
+
