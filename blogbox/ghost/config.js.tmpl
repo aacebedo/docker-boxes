@@ -1,0 +1,27 @@
+// # Ghost Configuration
+var path = require('path'),
+    config;
+
+config = {
+    // ### Production
+    // When running Ghost in the wild, use the production environment.
+    // Configure your URL and mail settings here
+    production: {
+        url: '{{.Env.GHOST_URL}}',
+        mail: {},
+        database: {
+            client: 'sqlite3',
+            connection: {
+                filename: '{{.Env.GHOST_DATADIR}}/ghost.db'
+            },
+            debug: false
+        },
+
+        server: {
+            host: '0.0.0.0',
+            port: '{{.Env.GHOST_PORT}}'
+        }
+    }
+};
+
+module.exports = config;

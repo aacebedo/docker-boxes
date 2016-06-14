@@ -1,0 +1,62 @@
+FROM alpine:latest
+MAINTAINER Alexandre ACEBEDO
+
+ENV GHOST_INSTALLDIR  /opt/ghost
+
+ARG GHOST_VERSION
+ENV GHOST_VERSION      ${GHOST_VERSION:-0.8.0}
+ENV GHOST_USER         ghost
+
+ARG GHOST_UID
+ENV GHOST_UID          ${GHOST_UID:-1000}
+
+ENV GHOST_GROUP        ghost
+
+ARG GHOST_GID
+ENV GHOST_GID          ${GHOST_GID:-1000}
+
+ARG GHOST_URL
+ENV GHOST_URL          ${GHOST_URL:-http://my.domain.com}
+
+ARG GHOST_PORT
+ENV GHOST_PORT         ${GHOST_PORT:-8080}
+
+ARG GHOST_DATADIR
+ENV GHOST_DATADIR     ${GHOST_DATADIR:-/var/lib/ghost}
+
+ENV DOCKERIZE_VERSION  0.2.0
+ENV DOCKERIZE_ARCH     amd64
+
+RUN apk update
+RUN apk add python git unzip wget tar zsh openssl ca-certificates vim bash nodejs-lts
+
+RUN wget https://ghost.org/zip/ghost-${GHOST_VERSION}.zip -O /tmp/ghost.zip
+RUN mkdir -p ${GHOST_INSTALLDIR}
+WORKDIR ${GHOST_INSTALLDIR}
+RUN unzip /tmp/ghost.zip
+RUN rm -rf /tmp/ghost.zip
+
+RUN npm install --production 
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
+RUN rm -rf /tmp/dockerize.tar.gz
+
+RUN addgroup -g ${GHOST_GID} -S ${GHOST_GROUP}
+RUN adduser -G ${GHOST_GROUP} -u ${GHOST_UID} -S -H ${GHOST_USER} 
+
+ADD ./config.js.tmpl ${GHOST_INSTALLDIR}/config.js.tmpl
+
+RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_INSTALLDIR}
+
+RUN mkdir -p ${GHOST_DATADIR}
+RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_DATADIR}
+
+VOLUME [${GHOST_DATADIR}]
+EXPOSE ${GHOST_PORT}
+
+USER ${GHOST_USER}
+
+WORKDIR ${GHOST_INSTALLDIR}
+
+ENTRYPOINT ["dockerize", "-template","./config.js.tmpl:./config.js", "npm", "start", "--production"]
