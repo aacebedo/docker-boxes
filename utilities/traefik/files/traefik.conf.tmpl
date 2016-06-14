@@ -17,7 +17,7 @@ accessLogsFile = "{{.Env.TRAEFIK_DATADIR}}/access.log"
    [entryPoints.https.tls]
 
 [acme]
-email = "{{.Env.TRAEFIK_MAIL}}"
+email = "{{.Env.TRAEFIK_ADMIN_EMAIL}}"
 
 storageFile = "{{.Env.TRAEFIK_DATADIR}}/acme.json"
 
