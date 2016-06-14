@@ -1,7 +1,7 @@
 FROM alpine:latest
 MAINTAINER Alexandre ACEBEDO
 
-ENV SICKRAGE_INSTALLDIR  /opt/sickrage
+ENV SICKRAGE_INSTALLDIR   /opt/sickrage
 
 ENV SICKRAGE_USER         sickrage
 
@@ -29,7 +29,7 @@ ENV DOCKERIZE_VERSION     0.2.0
 ENV DOCKERIZE_ARCH        amd64
 
 ARG SICKRAGE_DATADIR
-ENV SICKRAGE_DATADIR     ${SICKRAGE_DATADIR:-/var/lib/sickrage}
+ENV SICKRAGE_DATADIR      ${SICKRAGE_DATADIR:-/var/lib/sickrage}
 
 RUN apk update
 RUN apk add git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates
