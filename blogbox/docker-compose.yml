@@ -9,6 +9,7 @@ services:
       - traefik.frontend.entryPoints=http,https
     networks:
       - trafiek_network
+
 networks:
   trafiek_network:
     external:
