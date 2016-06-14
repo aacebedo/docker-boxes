@@ -1,0 +1,19 @@
+version: '2'
+services:
+  traefik:
+    build: ./traefik
+    labels:
+      - traefik.enable=false
+    networks:
+      - trafiek_network
+    environment:
+      - TRAEFIK_DOMAIN=${DOMAIN}
+      - TRAEFIK_SUBDOMAINS=${SUBDOMAINS}
+      - TRAEFIK_ADMIN_EMAIL=${ADMIN_EMAIL}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  trafiek_network:
+    external:
+      name: traefik_network
