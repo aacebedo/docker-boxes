@@ -52,6 +52,7 @@ RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_INSTALLDIR}
 RUN mkdir -p ${GHOST_DATADIR}
 RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_DATADIR}
 RUN setcap 'cap_net_bind_service=+ep' /usr/lib/node_modules/npm/bin/npm-cli.js
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/node
 
 VOLUME [${GHOST_DATADIR}]
 EXPOSE ${GHOST_PORT}
