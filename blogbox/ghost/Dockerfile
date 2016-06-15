@@ -1,7 +1,7 @@
 FROM alpine:latest
 MAINTAINER Alexandre ACEBEDO
 
-ENV GHOST_INSTALLDIR  /opt/ghost
+ENV GHOST_INSTALLDIR   /opt/ghost
 
 ARG GHOST_VERSION
 ENV GHOST_VERSION      ${GHOST_VERSION:-0.8.0}
@@ -19,16 +19,16 @@ ARG GHOST_URL
 ENV GHOST_URL          ${GHOST_URL:-http://my.domain.com}
 
 ARG GHOST_PORT
-ENV GHOST_PORT         ${GHOST_PORT:-8080}
+ENV GHOST_PORT         ${GHOST_PORT:-80}
 
 ARG GHOST_DATADIR
-ENV GHOST_DATADIR     ${GHOST_DATADIR:-/var/lib/ghost}
+ENV GHOST_DATADIR      ${GHOST_DATADIR:-/var/lib/ghost}
 
 ENV DOCKERIZE_VERSION  0.2.0
 ENV DOCKERIZE_ARCH     amd64
 
 RUN apk update
-RUN apk add python git unzip wget tar zsh openssl ca-certificates vim bash nodejs-lts
+RUN apk add python git unzip wget tar zsh openssl ca-certificates vim bash nodejs-lts libcap
 
 RUN wget https://ghost.org/zip/ghost-${GHOST_VERSION}.zip -O /tmp/ghost.zip
 RUN mkdir -p ${GHOST_INSTALLDIR}
@@ -51,6 +51,7 @@ RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_INSTALLDIR}
 
 RUN mkdir -p ${GHOST_DATADIR}
 RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_DATADIR}
+RUN setcap 'cap_net_bind_service=+ep' /usr/lib/node_modules/npm/bin/npm-cli.js
 
 VOLUME [${GHOST_DATADIR}]
 EXPOSE ${GHOST_PORT}
