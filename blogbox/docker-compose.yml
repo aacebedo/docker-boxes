@@ -1,14 +1,17 @@
 version: '2'
 services:
   ghost:
-    environment:
-      GHOST_URL: https://blog.${DOMAIN}
     build: ./ghost
     labels:
       - traefik.frontend.rule=Host:blog.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
     networks:
       - trafiek_network
+    environment:
+      - GHOST_URL=https://blog.${DOMAIN}
+      - GHOST_DATADIR=/var/lib/ghost
+    volumes:
+      - ${GHOST_DATADIR}:/var/lib/ghost
 
 networks:
   trafiek_network:
