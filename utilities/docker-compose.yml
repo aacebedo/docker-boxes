@@ -5,7 +5,7 @@ services:
     labels:
       - traefik.enable=false
     networks:
-      - trafiek_network
+      - traefik_network
     environment:
       - TRAEFIK_DOMAIN=${DOMAIN}
       - TRAEFIK_SUBDOMAINS=${SUBDOMAINS}
@@ -14,6 +14,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
-  trafiek_network:
+  traefik_network:
     external:
       name: traefik_network
