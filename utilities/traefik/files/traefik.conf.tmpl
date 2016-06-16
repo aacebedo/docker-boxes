@@ -29,7 +29,7 @@ onDemand = true
 
 [[acme.domains]]
    main = "{{.Env.TRAEFIK_DOMAIN}}"
-   sans = {{.Env.TRAEFIK_SUBDOMAINS}}
+   sans = [{{.Env.TRAEFIK_SUBDOMAINS}}]
 
 ################################################################
 # Web configuration backend

@@ -31,7 +31,7 @@ ARG TRAEFIK_DOMAIN
 ENV TRAEFIK_DOMAIN       ${TRAEFIK_DOMAIN:-domain.com}
 
 ARG TRAEFIK_SUBDOMAINS
-ENV TRAEFIK_SUBDOMAINS   ${TRAEFIK_SUBDOMAINS:-[\"subdomain.domain.com\"]}
+ENV TRAEFIK_SUBDOMAINS   ${TRAEFIK_SUBDOMAINS:-\"subdomain.domain.com\"
 
 ENV DOCKERIZE_VERSION    0.2.0
 ENV DOCKERIZE_ARCH       amd64
@@ -70,4 +70,5 @@ USER ${TRAEFIK_USER}
 VOLUME ["unix:///var/run/docker.sock"]
 WORKDIR ${TRAEFIK_INSTALLDIR}
 
+#ENTRYPOINT "zsh"
 ENTRYPOINT ["dockerize", "-template", "./traefik.conf.tmpl:./traefik.conf", "./traefik", "-c", "./traefik.conf"]
