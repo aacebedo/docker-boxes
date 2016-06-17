@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 ENV TRAEFIK_INSTALLDIR   /opt/traefik
@@ -34,12 +34,12 @@ ARG TRAEFIK_SUBDOMAINS
 ENV TRAEFIK_SUBDOMAINS   ${TRAEFIK_SUBDOMAINS:-\"subdomain.domain.com\"
 
 ENV DOCKERIZE_VERSION    0.2.0
-ENV DOCKERIZE_ARCH       amd64
+ENV DOCKERIZE_ARCH       {{.Env.DOCKERIZE_ARCH}}
 
 ARG TRAEFIK_DATADIR
 ENV TRAEFIK_DATADIR      ${TRAEFIK_DATADIR:-/var/lib/traefik}
 
-ENV TRAEFIK_ARCH         amd64
+ENV TRAEFIK_ARCH         {{.Env.TRAEFIK_ARCH}}
 
 RUN apk update
 RUN apk add git zsh openssl ca-certificates vim libcap
