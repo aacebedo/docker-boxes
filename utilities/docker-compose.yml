@@ -5,12 +5,11 @@ services:
     labels:
       - traefik.enable=false
     networks:
-      - traefik_network
+      - utilities_network
     environment:
       - TRAEFIK_DOMAIN=${DOMAIN}
       - TRAEFIK_SUBDOMAINS=${SUBDOMAINS}
       - TRAEFIK_ADMIN_EMAIL=${TRAEFIK_ADMIN_EMAIL}
-      - TRAEFIK_DATADIR=/var/lib/traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${TRAEFIK_DATADIR}:/var/lib/traefik
@@ -19,6 +18,6 @@ services:
       - 443:443 
     
 networks:
-  traefik_network:
+  utilities_network:
     external:
-      name: traefik_network
+      name: ${UTILITIES_NETWORK}

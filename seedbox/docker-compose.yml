@@ -10,7 +10,7 @@ services:
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
       - ${TVSHOWSDIR}:/mnt/data/tvshows
     networks:
-      - trafiek_network
+seedbox_net
 
   couchpotato:
     build: ./couchpotato
@@ -22,7 +22,7 @@ services:
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
       - ${MOVIESDIR}:/mnt/data/movies
     networks:
-      - trafiek_network
+      - seedbox_net
 
   nzbget:
     build: ./nzbget
@@ -32,7 +32,7 @@ services:
     volumes:
       - ${NZBSDIR}:/mnt/data
     networks:
-      - trafiek_network
+      - seedbox_net
 
   transmission:
     build: ./transmission
@@ -42,9 +42,9 @@ services:
     volumes:
       - ${TORRENTSDIR}:/mnt/data
     networks:
-      - trafiek_network
+      - seedbox_net
 
 networks:
-  trafiek_network:
+  seedbox_net:
     external:
-      name: traefik_network
+      name: ${SEEDBOX_NETWORK}
