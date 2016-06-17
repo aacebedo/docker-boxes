@@ -1,5 +1,9 @@
-FROM alpine:latest
+FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
+
+ENV NZBGET_INSTALLDIR  /opt/nzbget
+ENV NZBGET_CONFDIR     /etc/nzbget
+ENV NZBGET_DATADIR     /var/lib/nzbget
 
 ENV NZBGET_USER        nzbget
 
@@ -21,7 +25,7 @@ ARG NZBGET_VERSION
 ENV NZBGET_VERSION     ${NZBGET_VERSION:-16.4}
 
 ENV DOCKERIZE_VERSION  0.2.0
-ENV DOCKERIZE_ARCH     amd64
+ENV DOCKERIZE_ARCH     {{.Env.DOCKERIZE_ARCH}}
 
 ENV NZBGET_INSTALLDIR  /opt/nzbget
 
@@ -31,9 +35,10 @@ ENV NZBGET_DATADIR     ${NZBGET_DATADIR:-/var/lib/nzbget}
 ENV TERM xterm
 
 RUN apk update
-RUN apk add wget ca-certificates zsh vim
+RUN apk add wget ca-certificates zsh vim libcap
 RUN wget https://github.com/nzbget/nzbget/releases/download/v${NZBGET_VERSION}/nzbget-${NZBGET_VERSION}-bin-linux.run -O /tmp/nzbget.bin
 RUN chmod a+x /tmp/nzbget.bin
+RUN mkdir -p ${NZBGET_INSTALLDIR}
 RUN /tmp/nzbget.bin --destdir ${NZBGET_INSTALLDIR} 
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
@@ -43,15 +48,20 @@ RUN rm /tmp/dockerize.tar.gz
 RUN addgroup -g ${NZBGET_GID} -S ${NZBGET_GROUP}
 RUN adduser -G ${NZBGET_GROUP} -u ${NZBGET_UID} -S -H ${NZBGET_USER} 
 
-COPY ./files/nzbget.conf.tmpl ${NZBGET_INSTALLDIR}/nzbget.conf.tmpl
+RUN mkdir -p ${NZBGET_CONFDIR}
+COPY ./files/nzbget.conf.tmpl ${NZBGET_CONFDIR}/nzbget.conf.tmpl
+RUN chown -R ${NZBGET_USER}:${NZBGET_GROUP} ${NZBGET_CONFDIR}
 
 RUN mkdir -p ${NZBGET_DATADIR}
 RUN chown -R ${NZBGET_USER}:${NZBGET_GROUP} ${NZBGET_DATADIR}
+
 RUN chown -R ${NZBGET_USER}:${NZBGET_GROUP} ${NZBGET_INSTALLDIR}
+
+RUN setcap 'cap_net_bind_service=+ep' ${NZBGET_INSTALLDIR}/nzbget
 
 VOLUME [${NZBGET_DATADIR}]
 EXPOSE ${NZBGET_PORT} ${NZBGET_SECUREPORT}
 USER ${NZBGET_USER}
 WORKDIR ${NZBGET_INSTALLDIR} 
 
-ENTRYPOINT ["dockerize", "-template", "./nzbget.conf.tmpl:./nzbget.conf", "./nzbget", "-c", "./nzbget.conf", "-s"]
+ENTRYPOINT ["zsh", "-c" , "dockerize -template ${NZBGET_CONFDIR}/nzbget.conf.tmpl:${NZBGET_CONFDIR}/nzbget.conf ./nzbget -C ${NZBGET_CONFDIR}/nzbget.conf -s"]

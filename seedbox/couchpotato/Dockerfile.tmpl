@@ -2,6 +2,8 @@ FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 ENV COUCHPOTATO_INSTALLDIR   /opt/couchpotato
+ENV COUCHPOTATO_CONFDIR      /etc/couchpotato
+ENV COUCHPOTATO_DATADIR      /var/lib/couchpotato
 
 ARG COUCHPOTATO_USERNAME
 ENV COUCHPOTATO_USERNAME     ${COUCHPOTATO_USERNAME:-admin}
@@ -23,16 +25,13 @@ ARG COUCHPOTATO_GID
 ENV COUCHPOTATO_GID          ${COUCHPOTATO_GID:-1000}
 
 ARG COUCHPOTATO_PORT
-ENV COUCHPOTATO_PORT         ${COUCHPOTATO_PORT:-8080}
-
-ARG COUCHPOTATO_DATADIR
-ENV COUCHPOTATO_DATADIR      ${COUCHPOTATO_DATADIR:-/var/lib/couchpotato}
+ENV COUCHPOTATO_PORT         ${COUCHPOTATO_PORT:-80}
 
 ENV DOCKERIZE_VERSION        0.2.0
 ENV DOCKERIZE_ARCH           {{.Env.DOCKERIZE_ARCH}}
 
 RUN apk update
-RUN apk add git unzip python unrar wget tar zsh openssl py-openssl ca-certificates py-cryptography py-enum34 py-cffi py-lxml vim
+RUN apk add git unzip python unrar wget tar zsh openssl py-openssl ca-certificates py-cryptography py-enum34 py-cffi py-lxml vim libcap
 
 RUN wget https://github.com/CouchPotato/CouchPotatoServer/archive/build/${COUCHPOTATO_VERSION}.tar.gz -O /tmp/couchpotato.tar.gz
 RUN mkdir -p ${COUCHPOTATO_INSTALLDIR}
@@ -46,12 +45,17 @@ RUN rm -rf /tmp/dockerize.tar.gz
 RUN addgroup -g ${COUCHPOTATO_GID} -S ${COUCHPOTATO_GROUP}
 RUN adduser -G ${COUCHPOTATO_GROUP} -u ${COUCHPOTATO_UID} -S -H ${COUCHPOTATO_USER} 
 
+RUN mkdir -p ${COUCHPOTATO_CONFDIR}
+RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_CONFDIR}
+
 RUN mkdir -p ${COUCHPOTATO_DATADIR}
 RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_DATADIR}
 
 RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_INSTALLDIR} 
 
-COPY ./files/settings.conf.tmpl ${COUCHPOTATO_INSTALLDIR}/settings.conf.tmpl
+RUN setcap 'cap_net_bind_service=+ep' ${COUCHPOTATO_INSTALLDIR}/CouchPotato.py
+
+COPY ./files/settings.conf.tmpl ${COUCHPOTATO_CONFDIR}/settings.conf.tmpl
 
 EXPOSE ${COUCHPOTATO_PORT}
 
@@ -60,7 +64,7 @@ VOLUME [${COUCHPOTATO_DATADIR}]
 USER ${COUCHPOTATO_USER}
 
 WORKDIR ${COUCHPOTATO_INSTALLDIR}
-ENTRYPOINT ["zsh", "-c", "dockerize -template ./settings.conf.tmpl:./settings.conf ./CouchPotato.py --data_dir=${COUCHPOTATO_DATADIR} --config_file=./settings.conf"]
+ENTRYPOINT ["zsh", "-c", "dockerize -template ${COUCHPOTATO_CONFDIR}/settings.conf.tmpl:${COUCHPOTATO_CONFDIR}/settings.conf ./CouchPotato.py --data_dir=${COUCHPOTATO_DATADIR} --config_file=${COUCHPOTATO_CONFDIR}/settings.conf"]
 
 
 

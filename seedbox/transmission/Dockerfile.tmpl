@@ -12,7 +12,7 @@ ARG TRANSMISSION_GID
 ENV TRANSMISSION_GID        ${TRANSMISSION_GID:-1000}
 
 ARG TRANSMISSION_PORT
-ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-8080}
+ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-80}
 
 ARG TRANSMISSION_DIR
 ENV TRANSMISSION_DIR        ${TRANSMISSION_DATADIR:-/var/lib/transmission}
@@ -21,7 +21,7 @@ ENV DOCKERIZE_VERSION       0.2.0
 ENV DOCKERIZE_ARCH          {{.Env.DOCKERIZE_ARCH}}
 
 RUN apk update
-RUN apk add git unzip unrar wget vim tar zsh openssl transmission transmission-daemon ca-certificates
+RUN apk add git unzip unrar wget vim tar zsh openssl transmission transmission-daemon ca-certificates libcap
 
 RUN rm -rf /usr/share/transmission/web
 RUN git clone https://github.com/endor/kettu.git /usr/share/transmission/web
@@ -36,6 +36,8 @@ COPY ./files/settings.json.tmpl /etc/transmission-daemon/settings.json.tmpl
 RUN addgroup -g ${TRANSMISSION_GID} -S ${TRANSMISSION_GROUP} | true
 RUN adduser -G ${TRANSMISSION_GROUP} -u ${TRANSMISSION_UID} -S -H ${TRANSMISSION_USER} | true
 RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} /etc/transmission-daemon 
+
+RUN setcap 'cap_net_bind_service=+ep' `which transmission-daemon`
 
 EXPOSE ${TRANSMISSION_PORT}
 

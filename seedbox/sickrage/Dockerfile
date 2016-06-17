@@ -1,7 +1,9 @@
-FROM alpine:latest
+FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 ENV SICKRAGE_INSTALLDIR   /opt/sickrage
+ENV SICKRAGE_CONFDIR      /etc/sickrage
+ENV SICKRAGE_DATADIR      /var/lib/sickrage
 
 ENV SICKRAGE_USER         sickrage
 
@@ -20,19 +22,19 @@ ARG SICKRAGE_GID
 ENV SICKRAGE_GID          ${SICKRAGE_GID:-1000}
 
 ARG SICKRAGE_PORT
-ENV SICKRAGE_PORT         ${SICKRAGE_PORT:-8080}
+ENV SICKRAGE_PORT         ${SICKRAGE_PORT:-80}
  
 ARG SICKRAGE_VERSION
 ENV SICKRAGE_VERSION      ${SICKRAGE_VERSION:-2016.05.20-1}
 
 ENV DOCKERIZE_VERSION     0.2.0
-ENV DOCKERIZE_ARCH        amd64
+ENV DOCKERIZE_ARCH        {{.Env.DOCKERIZE_ARCH}}
 
 ARG SICKRAGE_DATADIR
 ENV SICKRAGE_DATADIR      ${SICKRAGE_DATADIR:-/var/lib/sickrage}
 
 RUN apk update
-RUN apk add git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates
+RUN apk add git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap
 
 RUN wget https://github.com/SickRage/SickRage/archive/${SICKRAGE_VERSION}.tar.gz -O /tmp/sickrage.tar.gz
 RUN mkdir -p ${SICKRAGE_INSTALLDIR}
@@ -46,13 +48,17 @@ RUN rm /tmp/dockerize.tar.gz
 RUN addgroup -g ${SICKRAGE_GID} -S ${SICKRAGE_GROUP}
 RUN adduser -G ${SICKRAGE_GROUP} -u ${SICKRAGE_UID} -S -H ${SICKRAGE_USER} 
 
+RUN mkdir -p ${SICKRAGE_CONFDIR}
+COPY ./files/settings.conf.tmpl ${SICKRAGE_CONFDIR}/settings.conf.tmpl
+RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_CONFDIR}
+
 RUN mkdir -p ${SICKRAGE_DATADIR}
 RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_DATADIR}
 
 RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_INSTALLDIR}
-
-COPY ./files/settings.conf.tmpl ${SICKRAGE_INSTALLDIR}/settings.conf.tmpl
  
+RUN setcap 'cap_net_bind_service=+ep' ${SICKRAGE_INSTALLDIR}/SickBeard.py
+
 VOLUME [${SICKRAGE_DATADIR}] 
 EXPOSE ${SICKRAGE_PORT}
 USER ${SICKRAGE_GUSER} 
