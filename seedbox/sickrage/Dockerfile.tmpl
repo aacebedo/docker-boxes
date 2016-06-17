@@ -54,7 +54,7 @@ RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_DATADIR}
 
 RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_INSTALLDIR}
  
-RUN setcap 'cap_net_bind_service=+ep' ${SICKRAGE_INSTALLDIR}/SickBeard.py
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
 
 VOLUME [${SICKRAGE_DATADIR}] 
 EXPOSE ${SICKRAGE_PORT}

@@ -46,6 +46,7 @@ RUN addgroup -g ${COUCHPOTATO_GID} -S ${COUCHPOTATO_GROUP}
 RUN adduser -G ${COUCHPOTATO_GROUP} -u ${COUCHPOTATO_UID} -S -H ${COUCHPOTATO_USER} 
 
 RUN mkdir -p ${COUCHPOTATO_CONFDIR}
+COPY ./files/settings.conf.tmpl ${COUCHPOTATO_CONFDIR}/settings.conf.tmpl
 RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_CONFDIR}
 
 RUN mkdir -p ${COUCHPOTATO_DATADIR}
@@ -53,9 +54,8 @@ RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_DATADIR}
 
 RUN chown -R ${COUCHPOTATO_USER}:${COUCHPOTATO_GROUP} ${COUCHPOTATO_INSTALLDIR} 
 
-RUN setcap 'cap_net_bind_service=+ep' ${COUCHPOTATO_INSTALLDIR}/CouchPotato.py
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
 
-COPY ./files/settings.conf.tmpl ${COUCHPOTATO_CONFDIR}/settings.conf.tmpl
 
 EXPOSE ${COUCHPOTATO_PORT}
 
@@ -64,6 +64,7 @@ VOLUME [${COUCHPOTATO_DATADIR}]
 USER ${COUCHPOTATO_USER}
 
 WORKDIR ${COUCHPOTATO_INSTALLDIR}
+
 ENTRYPOINT ["zsh", "-c", "dockerize -template ${COUCHPOTATO_CONFDIR}/settings.conf.tmpl:${COUCHPOTATO_CONFDIR}/settings.conf ./CouchPotato.py --data_dir=${COUCHPOTATO_DATADIR} --config_file=${COUCHPOTATO_CONFDIR}/settings.conf"]
 
 
