@@ -10,7 +10,7 @@ services:
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
       - ${TVSHOWSDIR}:/mnt/data/tvshows
     networks:
-seedbox_net
+      - seedbox_net
 
   couchpotato:
     build: ./couchpotato
