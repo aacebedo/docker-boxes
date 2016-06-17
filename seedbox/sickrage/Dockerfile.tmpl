@@ -30,9 +30,6 @@ ENV SICKRAGE_VERSION      ${SICKRAGE_VERSION:-2016.05.20-1}
 ENV DOCKERIZE_VERSION     0.2.0
 ENV DOCKERIZE_ARCH        {{.Env.DOCKERIZE_ARCH}}
 
-ARG SICKRAGE_DATADIR
-ENV SICKRAGE_DATADIR      ${SICKRAGE_DATADIR:-/var/lib/sickrage}
-
 RUN apk update
 RUN apk add git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap
 
@@ -65,4 +62,4 @@ USER ${SICKRAGE_GUSER}
 
 WORKDIR ${SICKRAGE_INSTALLDIR}
 
-ENTRYPOINT ["zsh", "-c", "dockerize -template ./settings.conf.tmpl:./settings.conf ./SickBeard.py --datadir=${SICKRAGE_DATADIR} --config=./settings.conf"]
+ENTRYPOINT ["zsh", "-c", "dockerize -template ${SICKRAGE_CONFDIR}/settings.conf.tmpl:${SICKRAGE_CONFDIR}/settings.conf ./SickBeard.py --datadir=${SICKRAGE_DATADIR} --config=${SICKRAGE_CONFDIR}/settings.conf"]

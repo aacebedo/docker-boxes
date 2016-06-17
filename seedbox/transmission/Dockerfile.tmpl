@@ -1,6 +1,9 @@
 FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
+ENV TRANSMISSION_DATADIR        /var/lib/transmission
+ENV TRANSMISSION_CONFDIR        /etc/transmission
+
 ENV TRANSMISSION_USER       transmission
 
 ARG TRANSMISSION_UID
@@ -14,8 +17,6 @@ ENV TRANSMISSION_GID        ${TRANSMISSION_GID:-1000}
 ARG TRANSMISSION_PORT
 ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-80}
 
-ARG TRANSMISSION_DIR
-ENV TRANSMISSION_DIR        ${TRANSMISSION_DATADIR:-/var/lib/transmission}
 
 ENV DOCKERIZE_VERSION       0.2.0
 ENV DOCKERIZE_ARCH          {{.Env.DOCKERIZE_ARCH}}
@@ -30,21 +31,20 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VER
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm -rf /tmp/dockerize.tar.gz
 
-RUN mkdir -p /etc/transmission-daemon/
-COPY ./files/settings.json.tmpl /etc/transmission-daemon/settings.json.tmpl
-
 RUN addgroup -g ${TRANSMISSION_GID} -S ${TRANSMISSION_GROUP} | true
 RUN adduser -G ${TRANSMISSION_GROUP} -u ${TRANSMISSION_UID} -S -H ${TRANSMISSION_USER} | true
-RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} /etc/transmission-daemon 
+
+RUN mkdir -p ${TRANSMISSION_CONFDIR}
+COPY ./files/settings.json.tmpl /etc/transmission-daemon/settings.json.tmpl
+RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} ${TRANSMISSION_CONFDIR}
 
 RUN setcap 'cap_net_bind_service=+ep' `which transmission-daemon`
 
 EXPOSE ${TRANSMISSION_PORT}
 
 USER ${TRANSMISSION_USER} 
-#ENTRYPOINT ["dockerize", "-template", "/etc/transmission-daemon/settings.json.tmpl:/etc/transmission-daemon/settings.json", "zsh"]
 
-ENTRYPOINT ["dockerize", "-template", "/etc/transmission-daemon/settings.json.tmpl:/etc/transmission-daemon/settings.json", "transmission-daemon","--foreground","-g","/etc/transmission-daemon"]
+ENTRYPOINT ["zsh", "-c", "dockerize -template ${TRANSMISSION_CONFDIR}/settings.json.tmpl:${TRANSMISSION_CONFDIR}/settings.json transmission-daemon --foreground -g ${TRANSMISSION_CONFDIR}"]
 
 
 

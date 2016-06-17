@@ -40,6 +40,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VER
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm -rf /tmp/dockerize.tar.gz
 
+COPY ./files/config.js.tmpl ${GHOST_INSTALLDIR}/config.js.tmpl
+
 RUN addgroup -g ${GHOST_GID} -S ${GHOST_GROUP}
 RUN adduser -G ${GHOST_GROUP} -u ${GHOST_UID} -S -H ${GHOST_USER} 
 
