@@ -59,4 +59,4 @@ EXPOSE ${NZBGET_PORT} ${NZBGET_SECUREPORT}
 USER ${NZBGET_USER}
 WORKDIR ${NZBGET_INSTALLDIR} 
 
-ENTRYPOINT ["zsh", "-c" , "dockerize -template ${NZBGET_CONFDIR}/nzbget.conf.tmpl:${NZBGET_CONFDIR}/nzbget.conf ./nzbget -C ${NZBGET_CONFDIR}/nzbget.conf -s"]
+ENTRYPOINT ["zsh", "-c" , "dockerize -template ${NZBGET_CONFDIR}/nzbget.conf.tmpl:${NZBGET_CONFDIR}/nzbget.conf ./nzbget -c ${NZBGET_CONFDIR}/nzbget.conf -s"]
