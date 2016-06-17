@@ -1,8 +1,8 @@
 FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
-ENV TRANSMISSION_DATADIR        /var/lib/transmission
-ENV TRANSMISSION_CONFDIR        /etc/transmission
+ENV TRANSMISSION_DATADIR    /var/lib/transmission
+ENV TRANSMISSION_CONFDIR    /etc/transmission
 
 ENV TRANSMISSION_USER       transmission
 
@@ -35,7 +35,7 @@ RUN addgroup -g ${TRANSMISSION_GID} -S ${TRANSMISSION_GROUP} | true
 RUN adduser -G ${TRANSMISSION_GROUP} -u ${TRANSMISSION_UID} -S -H ${TRANSMISSION_USER} | true
 
 RUN mkdir -p ${TRANSMISSION_CONFDIR}
-COPY ./files/settings.json.tmpl /etc/transmission-daemon/settings.json.tmpl
+COPY ./files/settings.json.tmpl ${TRANSMISSION_CONFDIR}/settings.json.tmpl
 RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} ${TRANSMISSION_CONFDIR}
 
 RUN setcap 'cap_net_bind_service=+ep' `which transmission-daemon`
