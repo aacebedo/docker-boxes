@@ -7,8 +7,8 @@ services:
     networks:
       - utilities_network
     environment:
-      - TRAEFIK_DOMAIN=${DOMAIN}
-      - TRAEFIK_SUBDOMAINS=${SUBDOMAINS}
+      - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
+      - TRAEFIK_SUBDOMAINS=${TRAEFIK_SUBDOMAINS}
       - TRAEFIK_ADMIN_EMAIL=${TRAEFIK_ADMIN_EMAIL}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
