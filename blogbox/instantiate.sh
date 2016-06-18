@@ -6,4 +6,4 @@ export DOMAIN="domain.com"
 export GHOST_DATADIR=""
 export BLOGBOX_NETWORK="blogbox_network"
 
-dockerize -template ./ghost/Dockerfile.tmpl:./ghost/Dockerfile
+dockerize -force -template ./ghost/Dockerfile.tmpl:./ghost/Dockerfile

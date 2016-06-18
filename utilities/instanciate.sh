@@ -9,4 +9,4 @@ export TRAEFIK_ADMIN_EMAIL="root@domain.com"
 export TRAEFIK_DATADIR=""
 export UTILITIES_NETWORK="utilities_network"
 
-dockerize -template ./traefik/Dockerfile.tmpl:./traefik/Dockerfile
+dockerize -force -template ./traefik/Dockerfile.tmpl:./traefik/Dockerfile

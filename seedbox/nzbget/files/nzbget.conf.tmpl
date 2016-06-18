@@ -288,12 +288,12 @@ ControlPort={{.Env.NZBGET_PORT}}
 # for older NZBGet versions may not have an option to define user name. In
 # this case you should set option <ControlUsername> to the default value
 # "nzbget" or use empty value.
-ControlUsername=nzbget
+ControlUsername={{.Env.NZBGET_USERNAME}}
 
 # Password which NZBGet server and remote client use.
 #
 # Set to empty value to disable authorization request.
-ControlPassword=nzbget
+ControlPassword={{.Env.NZBGET_PASSWORD}}
 
 # User name for restricted access.
 #

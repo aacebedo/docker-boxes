@@ -32,7 +32,7 @@ RUN mkdir -p ${COUCHPOTATO_INSTALLDIR}
 RUN tar --strip-components=1  -C ${COUCHPOTATO_INSTALLDIR} -xvzf /tmp/couchpotato.tar.gz
 RUN rm -rf /tmp/couchpotato.tar.gz
 
-RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm -rf /tmp/dockerize.tar.gz
 

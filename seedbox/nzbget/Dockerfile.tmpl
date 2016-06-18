@@ -27,7 +27,7 @@ ENV NZBGET_VERSION     ${NZBGET_VERSION:-16.4}
 ENV DOCKERIZE_VERSION  0.2.0
 ENV DOCKERIZE_ARCH     {{.Env.DOCKERIZE_ARCH}}
 
-ARG NZBGETGET_USERNAME
+ARG NZBGET_USERNAME
 ENV NZBGET_USERNAME    ${NZBGET_USERNAME:-admin}
 
 ARG NZBGET_PASSWORD
@@ -43,7 +43,7 @@ RUN chmod a+x /tmp/nzbget.bin
 RUN mkdir -p ${NZBGET_INSTALLDIR}
 RUN /tmp/nzbget.bin --destdir ${NZBGET_INSTALLDIR} 
 
-RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm /tmp/dockerize.tar.gz
 
