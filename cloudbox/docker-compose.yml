@@ -1,0 +1,20 @@
+version: '2'
+services:
+  seafile:
+    build: ./seafile
+    labels:
+      - traefik.frontend.rule=Host:seafile.${DOMAIN} 
+      - traefik.frontend.entryPoints=http,https
+    networks:
+      - cloudbox_network
+    environment:
+      - SEAFILE_SERVERHOST=${SEAFILE_SERVERHOST}
+      - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL}
+      - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD}
+    volumes:
+      - ${SEAFILE_DATADIR}:/var/lib/seafile
+
+networks:
+  cloudbox_network:
+    external:
+      name: ${CLOUDBOX_NETWORK}
