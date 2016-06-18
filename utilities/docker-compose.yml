@@ -16,6 +16,7 @@ services:
     ports:
       - 80:80
       - 443:443 
+      - 82:82
     
 networks:
   utilities_network:
