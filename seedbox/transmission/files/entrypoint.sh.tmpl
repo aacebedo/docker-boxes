@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+export TRANSMISSION_DATADIR={{.Env.TRANSMISSION_DATADIR}}
+export TRANSMISSION_PORT={{.Env.TRANSMISSION_PORT}}
+dockerize -template {{.Env.TRANSMISSION_CONFDIR}}/settings.json.tmpl:{{.Env.TRANSMISSION_CONFDIR}}/settings.json transmission-daemon --foreground -g {{.Env.TRANSMISSION_CONFDIR}}

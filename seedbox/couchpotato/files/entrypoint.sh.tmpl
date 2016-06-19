@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+export COUCHPOTATO_PORT={{.Env.COUCHPOTATO_PORT}}
+dockerize -template {{.Env.COUCHPOTATO_CONFDIR}}/settings.conf.tmpl:{{.Env.COUCHPOTATO_CONFDIR}}/settings.conf ./CouchPotato.py --data_dir={{.Env.COUCHPOTATO_DATADIR}} --config_file={{.Env.COUCHPOTATO_CONFDIR}}/settings.conf

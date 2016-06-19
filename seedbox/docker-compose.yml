@@ -1,7 +1,10 @@
 version: '2'
 services:
   sickrage:
-    build: ./sickrage
+    build: 
+      context: ./sickrage
+      args:
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
     labels:
       - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
@@ -11,12 +14,12 @@ services:
       - ${TVSHOWSDIR}:/mnt/data/tvshows
     networks:
       - seedbox_net
-    environment:
-      - SICKRAGE_USERNAME=${SICKRAGE_USERNAME}
-      - SICKRAGE_PASSWORD=${SICKRAGE_PASSWORD}
 
   couchpotato:
-    build: ./couchpotato
+    build: 
+      context: ./couchpotato
+      args:
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
     labels:
       - traefik.frontend.rule=Host:couchpotato.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
@@ -28,7 +31,10 @@ services:
       - seedbox_net
 
   nzbget:
-    build: ./nzbget
+    build: 
+      context: ./nzbget
+      args:
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
     labels:
       - traefik.frontend.rule=Host:nzbget.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
@@ -36,12 +42,12 @@ services:
       - ${NZBSDIR}:/mnt/data
     networks:
       - seedbox_net
-    environment:
-      - NZBGET_USERNAME=${NZBGET_USERNAME}
-      - NZBGET_PASSWORD=${NZBGET_PASSWORD}
 
   transmission:
-    build: ./transmission
+    build: 
+      context: ./transmission
+      args:
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
     labels:
       - traefik.frontend.rule=Host:transmission.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
@@ -49,9 +55,6 @@ services:
       - ${TORRENTSDIR}:/mnt/data
     networks:
       - seedbox_net
-    environment:
-      - TRANSMISSION_USERNAME=${TRANSMISSION_USERNAME}
-      - TRANSMISSION_PASSWORD=${TRANSMISSION_PASSWORD}
 
 networks:
   seedbox_net:
