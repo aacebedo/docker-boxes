@@ -2,18 +2,12 @@
 
 export BASE_IMAGE="alpine:latest"
 export DOCKERIZE_ARCH="amd64"
-export DOMAIN="domain.com"
-export NZBSDIR=""
-export MOVIESDIR=""
-export TORRENTSDIR=""
-export TVSHOWSDIR=""
-export SICKRAGE_USERNAME="admin"
-export SICKRAGE_PASSWORD="password"
-export NZBGET_USERNAME="admin"
-export NZBGET_PASSWORD="password"
-export TRANSMISSION_USERNAME="admin"
-export TRANSMISSION_PASSWORD="password"
-export SEEDBOX_NETWORK="seedbox_network"
+export NZBSDIR="/tmp/medias"
+export MOVIESDIR="/tmp/medias"
+export TORRENTSDIR="/tmp/medias"
+export TVSHOWSDIR="/tmp/medias"
+export DOMAIN="example.com"
+export SEEDBOX_NETWORK="traefik_network"
 
 dockerize -force -template ./nzbget/Dockerfile.tmpl:./nzbget/Dockerfile
 dockerize -force -template ./sickrage/Dockerfile.tmpl:./sickrage/Dockerfile
