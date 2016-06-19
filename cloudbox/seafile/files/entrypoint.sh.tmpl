@@ -6,6 +6,7 @@ export SEAFILE_INSTALLDIR={{.Env.SEAFILE_INSTALLDIR}}
 export SEAFILE_DATADIR={{.Env.SEAFILE_DATADIR}}
 export SEAFILE_USER={{.Env.SEAFILE_USER}}
 export SEAFILE_GROUP={{.Env.SEAFILE_GROUP}}
+export SEAFILE_PORT={{.Env.SEAFILE_PORT}}
 dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/lighttpd.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/lighttpd.conf
 export SEAFILE_ID=`grep "ID" {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf | cut -d ' ' -f 3`
 dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
