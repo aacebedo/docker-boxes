@@ -1,7 +1,20 @@
 version: '2'
 services:
   traefik:
-    build: ./traefik
+    build:
+      context: ./traefik
+      args:
+        TRAEFIK_INSTALLDIR:     /opt/traefik
+        TRAEFIK_CONFDIR:        /etc/traefik
+        TRAEFIK_DATADIR:        /var/lib/traefik
+        DOCKERIZE_VERSION:      0.2.0
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        TRAEFIK_ARCH:           ${TRAEFIK_ARCH}
+        TRAEFIK_UID:            1000
+        TRAEFIK_GID:            1000
+        TRAEFIK_USER:           traefik
+        TRAEFIK_GROUP:          traefik
+        TRAEFIK_VERSION:        1.0.0-rc2
     labels:
       - traefik.enable=false
     networks:
@@ -10,13 +23,16 @@ services:
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
       - TRAEFIK_SUBDOMAINS=${TRAEFIK_SUBDOMAINS}
       - TRAEFIK_ADMIN_EMAIL=${TRAEFIK_ADMIN_EMAIL}
+      - TRAEFIK_PORT=${TRAEFIK_PORT}
+      - TRAEFIK_SECUREPORT=${TRAEFIK_SECUREPORT}
+      - TRAEFIK_CONTROLPORT=${TRAEFIK_CONTROLPORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${TRAEFIK_DATADIR}:/var/lib/traefik
     ports:
-      - 80:80
-      - 443:443 
-      - 82:82
+      - ${TRAEFIK_PORT}:${TRAEFIK_PORT}
+      - ${TRAEFIK_SECUREPORT}:${TRAEFIK_SECUREPORT}
+      - ${TRAEFIK_CONTROLPORT}:${TRAEFIK_CONTROLPORT}
     
 networks:
   utilities_network:

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+export TRAEFIK_DATADIR={{.Env.TRAEFIK_DATADIR}}
+dockerize -template {{.Env.TRAEFIK_CONFDIR}}/traefik.conf.tmpl:{{.Env.TRAEFIK_CONFDIR}}/traefik.conf ./traefik -C {{.Env.TRAEFIK_CONFDIR}}/traefik.conf
