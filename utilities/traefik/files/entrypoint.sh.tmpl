@@ -1,3 +1,6 @@
 #!/usr/bin/env sh
 export TRAEFIK_DATADIR={{.Env.TRAEFIK_DATADIR}}
+export TRAEFIK_PORT={{.Env.TRAEFIK_PORT}}
+export TRAEFIK_SECUREPORT={{.Env.TRAEFIK_SECUREPORT}}
+export TRAEFIK_CONTROLPORT={{.Env.TRAEFIK_CONTROLPORT}}
 dockerize -template {{.Env.TRAEFIK_CONFDIR}}/traefik.conf.tmpl:{{.Env.TRAEFIK_CONFDIR}}/traefik.conf ./traefik -C {{.Env.TRAEFIK_CONFDIR}}/traefik.conf
