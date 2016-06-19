@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+export GHOST_DATADIR={{.Env.GHOST_DATADIR}}
+export GHOST_PORT={{.Env.GHOST_PORT}}
+dockerize -template {{.Env.GHOST_INSTALLDIR}}/config.js.tmpl:{{.Env.GHOST_INSTALLDIR}}/config.js npm start --production

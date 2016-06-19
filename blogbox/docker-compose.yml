@@ -3,12 +3,12 @@ services:
   ghost:
     build: ./ghost
     labels:
-      - traefik.frontend.rule=Host:blog.${DOMAIN} 
+      - traefik.frontend.rule=Host:blog.${GHOST_DOMAIN} 
       - traefik.frontend.entryPoints=http,https
     networks:
       - blogbox_network
     environment:
-      - GHOST_URL=https://blog.${DOMAIN}
+      - GHOST_URL=https://blog.${GHOST_DOMAIN}
     volumes:
       - ${GHOST_DATADIR}:/var/lib/ghost
 
