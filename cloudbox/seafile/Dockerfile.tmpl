@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 ARG SEAFILE_INSTALLDIR=/opt/seafile
