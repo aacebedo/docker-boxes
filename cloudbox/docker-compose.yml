@@ -1,14 +1,23 @@
 version: '2'
 services:
   seafile:
-    build: ./seafile
+    build: 
+      context: ./seafile
+      args:
+        SEAFILE_DOMAIN: 80
+        SEAFILE_DOMAIN: ${DOMAIN}
+        SEAFILE_SERVERNAME: ${SEAFILE_SERVERNAME}
+        SEAFILE_ADMIN_EMAIL: ${SEAFILE_ADMIN_EMAIL}
+        SEAFILE_ADMIN_PASSWORD: ${SEAFILE_ADMIN_PASSWORD}
+     
     labels:
       - traefik.frontend.rule=Host:seafile.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
     networks:
       - cloudbox_network
     environment:
-      - SEAFILE_SERVERHOST=${SEAFILE_SERVERHOST}
+      - SEAFILE_DOMAIN=${DOMAIN}
+      - SEAFILE_SERVERNAME=${SEAFILE_SERVERNAME}
       - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL}
       - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD}
     volumes:

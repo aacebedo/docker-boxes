@@ -65,25 +65,21 @@ COPY files/ccnet.conf.tmpl ${SEAFILE_INSTALLDIR}/ccnet.conf.tmpl
 COPY files/seahub_settings.py.tmpl ${SEAFILE_INSTALLDIR}/seahub_settings.py.tmpl
 COPY files/nginx.conf.tmpl ${SEAFILE_INSTALLDIR}/nginx.conf.tmpl
 
-#RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
-
-RUN rm -rf /etc/nginx/sites-enabled/*
+RUN mkdir -p ${SEAFILE_DATADIR} 
 
 #ADD https://github.com/haiwen/seafile-rpi/releases/download/v${SEAFILE_VERSION}/seafile-server_stable_${SEAFILE_VERSION}_pi.tar.gz /tmp/seafile.tar.gz
 ADD https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_${SEAFILE_VERSION}_x86-64.tar.gz /tmp/seafile.tar.gz
 RUN ${SEAFILE_INSTALLDIR}/seafile-installer.py install --install-dir ${SEAFILE_INSTALLDIR} --data-dir ${SEAFILE_DATADIR} --domain ${SEAFILE_DOMAIN} --server-name ${SEAFILE_SERVERNAME} --server-port ${SEAFILE_SERVER_PORT} /tmp/seafile.tar.gz
-RUN dockerize -force -template ${SEAFILE_INSTALLDIR}/nginx.conf.tmpl:/etc/nginx/sites-enabled/seafile.conf
+RUN dockerize -force -template ${SEAFILE_INSTALLDIR}/nginx.conf.tmpl:/etc/nginx/nginx.conf
 RUN export SEAFILE_ID=`grep "ID" ${SEAFILE_INSTALLDIR}/conf/ccnet.conf | cut -d ' ' -f 3` && dockerize -force  -template ${SEAFILE_INSTALLDIR}/ccnet.conf.tmpl:${SEAFILE_INSTALLDIR}/conf/ccnet.conf
 RUN ${SEAFILE_INSTALLDIR}/seafile-installer.py configure --install-dir ${SEAFILE_INSTALLDIR} --admin-email ${SEAFILE_ADMIN_EMAIL} --admin-password ${SEAFILE_ADMIN_PASSWORD}
 RUN export SEAFILE_SECRETKEY=`grep "SECRET_KEY" ${SEAFILE_INSTALLDIR}/conf/seahub_settings.py | cut -d ' ' -f 3` && dockerize -force -template ${SEAFILE_INSTALLDIR}/seahub_settings.py.tmpl:${SEAFILE_INSTALLDIR}/conf/seahub_settings.py
-#RUN rm /tmp/seafile.tar.gz 
+RUN rm /tmp/seafile.tar.gz 
 
-#RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
 
-RUN mkdir -p ${SEAFILE_DATADIR} 
-#RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 
 EXPOSE ${SEAFILE_PORT}
 
-ENTRYPOINT "zsh"
-#ENTRYPOINT ["zsh","-c","${SEAFILE_INSTALLDIR}/entrypoint.sh"]
+ENTRYPOINT ["zsh","-c","${SEAFILE_INSTALLDIR}/entrypoint.sh"]
