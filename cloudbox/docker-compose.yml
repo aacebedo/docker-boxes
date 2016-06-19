@@ -4,19 +4,26 @@ services:
     build: 
       context: ./seafile
       args:
-        SEAFILE_DOMAIN: 80
-        SEAFILE_DOMAIN: ${DOMAIN}
-        SEAFILE_SERVERNAME: ${SEAFILE_SERVERNAME}
-        SEAFILE_ADMIN_EMAIL: ${SEAFILE_ADMIN_EMAIL}
-        SEAFILE_ADMIN_PASSWORD: ${SEAFILE_ADMIN_PASSWORD}
-     
+        SEAFILE_INSTALLDIR:     /opt/seafile
+        SEAFILE_DATADIR:        /var/lib/seafile
+        DOCKERIZE_VERSION:      0.2.0
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        SEAFILE_UID:            1000
+        SEAFILE_GID:            1000
+        SEAFILE_USER:           seafile
+        SEAFILE_GROUP:          seafile
+        SEAFILE_VERSION:        5.1.3
+        SEAFILE_URL:            ${SEAFILE_URL}
+        SEAFILE_SEAHUB_PORT:    8000     
+        SEAFILE_SERVER_PORT:    8082
     labels:
-      - traefik.frontend.rule=Host:seafile.${DOMAIN} 
+      - traefik.frontend.rule=Host:${SEAFILE_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
     networks:
       - cloudbox_network
     environment:
-      - SEAFILE_DOMAIN=${DOMAIN}
+      - SEAFILE_PORT=${SEAFILE_PORT}
+      - SEAFILE_HOSTNAME=${SEAFILE_HOSTNAME}
       - SEAFILE_SERVERNAME=${SEAFILE_SERVERNAME}
       - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL}
       - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD}

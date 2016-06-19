@@ -1,0 +1,51 @@
+FROM alpine:latest
+MAINTAINER Alexandre ACEBEDO
+
+ENV TRANSMISSION_DATADIR    /var/lib/transmission
+ENV TRANSMISSION_CONFDIR    /etc/transmission
+
+ENV TRANSMISSION_USER       transmission
+
+ARG TRANSMISSION_UID
+ENV TRANSMISSION_UID        ${TRANSMISSION_UID:-1000}
+
+ENV TRANSMISSION_GROUP      transmission
+
+ARG TRANSMISSION_GID
+ENV TRANSMISSION_GID        ${TRANSMISSION_GID:-1000}
+
+ARG TRANSMISSION_PORT
+ENV TRANSMISSION_PORT       ${TRANSMISSION_PORT:-80}
+
+
+ENV DOCKERIZE_VERSION       0.2.0
+ENV DOCKERIZE_ARCH          amd64
+
+RUN apk update
+RUN apk add git unzip unrar wget vim tar zsh openssl transmission transmission-daemon ca-certificates libcap
+
+RUN rm -rf /usr/share/transmission/web
+RUN git clone https://github.com/endor/kettu.git /usr/share/transmission/web
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
+RUN rm -rf /tmp/dockerize.tar.gz
+
+RUN addgroup -g ${TRANSMISSION_GID} -S ${TRANSMISSION_GROUP} | true
+RUN adduser -G ${TRANSMISSION_GROUP} -u ${TRANSMISSION_UID} -S -H ${TRANSMISSION_USER} | true
+
+RUN mkdir -p ${TRANSMISSION_CONFDIR}
+COPY ./files/settings.json.tmpl ${TRANSMISSION_CONFDIR}/settings.json.tmpl
+RUN chown -R ${TRANSMISSION_USER}:${TRANSMISSION_GROUP} ${TRANSMISSION_CONFDIR}
+
+RUN setcap 'cap_net_bind_service=+ep' `which transmission-daemon`
+
+EXPOSE ${TRANSMISSION_PORT}
+
+USER ${TRANSMISSION_USER} 
+
+ENTRYPOINT ["zsh", "-c", "dockerize -template ${TRANSMISSION_CONFDIR}/settings.json.tmpl:${TRANSMISSION_CONFDIR}/settings.json transmission-daemon --foreground -g ${TRANSMISSION_CONFDIR}"]
+
+
+
+

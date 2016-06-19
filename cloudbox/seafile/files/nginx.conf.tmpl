@@ -1,5 +1,5 @@
 daemon off;
-user www-data;
+
 worker_processes auto;
 pid /run/nginx.pid;
 
@@ -33,8 +33,8 @@ http {
 	# Logging Settings
 	##
 
-	access_log /var/log/nginx/access.log;
-	error_log /var/log/nginx/error.log;
+	access_log {{.Env.SEAFILE_DATADIR}}/log/nginx/access.log;
+	error_log {{.Env.SEAFILE_DATADIR}}/log/nginx/error.log;
 
 	##
 	# Gzip Settings
@@ -47,11 +47,14 @@ http {
 	# Virtual Host Configs
 	##
 
-	include /etc/nginx/conf.d/*.conf;
+	#include /etc/nginx/conf.d/*.conf;
 
+        client_body_temp_path /tmp 1 2;
+        client_body_buffer_size 256k;
+        client_body_in_file_only off;
 server {
     listen      {{.Env.SEAFILE_PORT}} default;
-    server_name {{.Env.SEAFILE_SERVERNAME}}.{{.Env.SEAFILE_DOMAIN}};
+    server_name {{.Env.SEAFILE_HOSTNAME}};
 
     proxy_set_header X-Forwarded-For $remote_addr;
 
@@ -70,8 +73,8 @@ server {
         fastcgi_param   SERVER_NAME        $server_name;
         fastcgi_param   REMOTE_ADDR        $remote_addr;
 
-        access_log      /var/log/nginx/seahub.access.log;
-        error_log       /var/log/nginx/seahub.error.log;
+        access_log      {{.Env.SEAFILE_DATADIR}}/log/nginx/seahub.access.log;
+        error_log       {{.Env.SEAFILE_DATADIR}}/log/nginx/seahub.error.log;
         fastcgi_read_timeout 36000;
     }
 
@@ -79,6 +82,7 @@ server {
         rewrite ^/seafhttp(.*)$ $1 break;
         proxy_pass http://127.0.0.1:{{.Env.SEAFILE_SERVER_PORT}};
         client_max_body_size 0;
+
         proxy_connect_timeout  36000s;
         proxy_read_timeout  36000s;
         proxy_send_timeout  36000s;
