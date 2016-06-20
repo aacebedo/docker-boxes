@@ -1,6 +1,9 @@
 FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
+RUN apk update
+RUN apk add git zsh openssl ca-certificates vim libcap
+
 ARG TRAEFIK_INSTALLDIR=/opt/traefik
 ARG TRAEFIK_CONFDIR=/etc/traefik
 ARG TRAEFIK_DATADIR=/var/lib/traefik
@@ -25,9 +28,6 @@ ARG TRAEFIK_CONTROLPORT=82
 ENV TRAEFIK_ADMIN_EMAIL  root@domain.com
 ENV TRAEFIK_DOMAIN       example.domain.com
 ENV TRAEFIK_SUBDOMAINS   ""
-
-RUN apk update
-RUN apk add git zsh openssl ca-certificates vim libcap
 
 RUN addgroup -g ${TRAEFIK_GID} -S ${TRAEFIK_GROUP}
 RUN adduser -G ${TRAEFIK_GROUP} -u ${TRAEFIK_UID} -S -H ${TRAEFIK_USER} 

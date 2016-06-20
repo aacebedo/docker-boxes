@@ -1,6 +1,15 @@
 FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
+RUN apt update 
+RUN apt install lighttpd python python-pip python-imaging python3 sqlite gcc python-pillow \
+    python-dev libssl-dev libldap2-dev zsh less vim bash libevent-dev zlib1g-dev \
+    libglib2.0-dev libffi-dev libjansson4 libsasl2-dev wget python3-pip -y --force-yes
+
+RUN pip install python-ldap
+RUN pip3 install --upgrade pip
+RUN pip3 install pexpect
+
 ARG SEAFILE_INSTALLDIR=/opt/seafile
 ARG SEAFILE_DATADIR=/var/lib/seafile
 
@@ -26,14 +35,6 @@ ENV SEAFILE_HOSTNAME       seafile.example.com
 
 ENV SEAFILE_ADMIN_EMAIL    admin@example.com
 ENV SEAFILE_ADMIN_PASSWORD password
-
-RUN apt update 
-RUN apt install lighttpd python python-pip python-imaging python3 sqlite gcc python-pillow \
-    python-dev libssl-dev libldap2-dev zsh less vim bash libevent-dev zlib1g-dev \
-    libglib2.0-dev libffi-dev libjansson4 libsasl2-dev wget python3-pip -y --force-yes
-RUN pip install python-ldap
-RUN pip3 install --upgrade pip
-RUN pip3 install pexpect
 
 RUN addgroup --system --gid ${SEAFILE_GID} ${SEAFILE_GROUP}
 RUN adduser --system -gid ${SEAFILE_GID} --uid ${SEAFILE_UID} ${SEAFILE_USER} 

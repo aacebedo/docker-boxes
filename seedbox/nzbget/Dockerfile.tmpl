@@ -1,6 +1,9 @@
 FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
+RUN apk update
+RUN apk add wget ca-certificates zsh vim libcap
+
 ARG NZBGET_INSTALLDIR=/opt/nzbget
 ARG NZBGET_CONFDIR=/etc/nzbget
 ARG NZBGET_DATADIR=/var/lib/nzbget
@@ -23,9 +26,6 @@ ENV NZBGET_USERNAME    admin
 ENV NZBGET_PASSWORD    password
 
 ENV TERM xterm
-
-RUN apk update
-RUN apk add wget ca-certificates zsh vim libcap
 
 RUN addgroup -g ${NZBGET_GID} -S ${NZBGET_GROUP}
 RUN adduser -G ${NZBGET_GROUP} -u ${NZBGET_UID} -S -H ${NZBGET_USER} 
