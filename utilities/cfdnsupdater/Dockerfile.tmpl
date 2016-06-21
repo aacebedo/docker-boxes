@@ -1,0 +1,25 @@
+FROM {{.Env.BaseImage}}
+
+RUN apk add --no-cache ca-certificates
+
+ARG TRAEFIK_INSTALLDIR=/opt/traefik
+ARG TRAEFIK_CONFDIR=/etc/traefik
+ARG TRAEFIK_DATADIR=/var/lib/traefik
+
+ARG CFNDSUPDATER_VERSION
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
+RUN rm /tmp/dockerize.tar.gz
+
+ADD https://github.com/aacebedo/cfdnsupdater/releases/download/${VERSION}/cfdnsupdater.arm.${VERSION}.tar /tmp/cfdnsupdater.tar
+RUN tar xvf /tmp/cfdnsupdater.tar -C /
+RUN rm -rf /tmp/cfdnsupdater.tar
+
+COPY ./files/traefik.conf.tmpl ${TRAEFIK_CONFDIR}/traefik.conf.tmpl
+
+COPY files/entrypoint.sh.tmpl ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl
+RUN dockerize -template ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl:${TRAEFIK_INSTALLDIR}/entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
+
