@@ -7,16 +7,16 @@ export SEAFILE_DATADIR={{.Env.SEAFILE_DATADIR}}
 export SEAFILE_USER={{.Env.SEAFILE_USER}}
 export SEAFILE_GROUP={{.Env.SEAFILE_GROUP}}
 export SEAFILE_PORT={{.Env.SEAFILE_PORT}}
-dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/lighttpd.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/lighttpd.conf
+export SEAFILE_HOSTNAME={{.Env.SEAFILE_HOSTNAME}}
+export SEAFILE_PROTOCOL={{.Env.SEAFILE_PROTOCOL}}
+export APACHE2_CONFDIR={{.Env.APACHE2_CONFDIR}}
+dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/apache2.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/apache2.conf
 export SEAFILE_ID=`grep "ID" {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf | cut -d ' ' -f 3`
-dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
+dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-installer.py configure --install-dir {{.Env.SEAFILE_INSTALLDIR}} --admin-email ${SEAFILE_ADMIN_EMAIL} --admin-password ${SEAFILE_ADMIN_PASSWORD}
 export SEAFILE_SECRETKEY=`grep "SECRET_KEY" {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py | cut -d ' ' -f 3`
-dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
-
-mkdir -p ${SEAFILE_DATADIR}/log/lighttpd
-mkdir -p ${SEAFILE_DATADIR}/cache/lighttpd/uploads
+dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
 
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seafile.sh start
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seahub.sh start-fastcgi {{.Env.SEAFILE_SEAHUB_PORT}}
-lighttpd -f {{.Env.SEAFILE_INSTALLDIR}}/lighttpd.conf -D
+apachectl -d . -f {{.Env.SEAFILE_INSTALLDIR}}/conf/apache2.conf -e info -DFOREGROUND
