@@ -67,18 +67,21 @@ RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 
+RUN mkdir -p /var/run/apache2
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} /var/run/apache2
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} /var/lock
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} /run/lock
+
 RUN  a2enmod rewrite
 RUN  a2enmod proxy_fcgi
 RUN  a2enmod proxy_http
 
-#RUN setcap 'cap_net_bind_service=+ep' `which apachectl`
-#RUN setcap 'cap_net_bind_service=+ep' ${SEAFILE_INSTALLDIR}/seafile-server-${SEAFILE_VERSION}/seafile.sh
-#RUN setcap 'cap_net_bind_service=+ep' ${SEAFILE_INSTALLDIR}/seafile-server-${SEAFILE_VERSION}/seahub.sh
+RUN setcap 'cap_net_bind_service=+ep' `which apache2ctl`
 
 EXPOSE ${SEAFILE_PORT}
 
-#USER ${SEAFILE_USER}
+USER ${SEAFILE_USER}
 WORKDIR ${SEAFILE_INSTALLDIR}
 
 #ENTRYPOINT ["./entrypoint.sh"]
-ENTRYPOINT ["zsh"]
+ENTRYPOINT "zsh"
