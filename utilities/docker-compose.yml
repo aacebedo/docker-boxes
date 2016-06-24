@@ -21,7 +21,17 @@ services:
       - ${TRAEFIK_PORT}:80
       - ${TRAEFIK_SECUREPORT}:443
       - ${TRAEFIK_CONTROLPORT}:82
-    
+  cfdnsupdater:
+    build:
+      context: ./cfdnsupdater
+      args:
+        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        CFDNSUPDATER_ARCH:      ${CFDNSUPDATER_ARCH}
+    labels:
+      - traefik.enable=false
+    networks:
+      - utilities_network
+   
 networks:
   utilities_network:
     external:

@@ -8,6 +8,7 @@ ARG GHOST_INSTALLDIR=/opt/ghost
 ARG GHOST_DATADIR=/var/lib/ghost
 
 ARG GHOST_VERSION=0.8.0
+ARG GHOST_URL=https://ghost.org/zip/ghost-${GHOST_VERSION}.zip
 
 ARG GHOST_USER=ghost
 ARG GHOST_UID=1000
@@ -18,8 +19,9 @@ ARG GHOST_PORT=80
 
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
+ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
 
-ENV GHOST_URL          http://my.domain.com
+ENV GHOST_HOSTNAME          http://my.domain.com
 
 RUN mkdir -p ${GHOST_INSTALLDIR}
 RUN mkdir -p ${GHOST_DATADIR}
@@ -27,12 +29,12 @@ RUN mkdir -p ${GHOST_DATADIR}
 RUN addgroup -g ${GHOST_GID} -S ${GHOST_GROUP}
 RUN adduser -G ${GHOST_GROUP} -u ${GHOST_UID} -S -H ${GHOST_USER} 
 
-RUN wget https://ghost.org/zip/ghost-${GHOST_VERSION}.zip -O /tmp/ghost.zip
+RUN wget ${GHOST_URL} -O /tmp/ghost.zip
 WORKDIR ${GHOST_INSTALLDIR}
 RUN unzip /tmp/ghost.zip
 RUN rm -rf /tmp/ghost.zip
 
-RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm -rf /tmp/dockerize.tar.gz
 

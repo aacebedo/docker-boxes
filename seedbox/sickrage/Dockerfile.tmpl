@@ -9,9 +9,11 @@ ARG SICKRAGE_CONFDIR=/etc/sickrage
 ARG SICKRAGE_DATADIR=/var/lib/sickrage
 
 ARG SICKRAGE_VERSION=2016.05.20-1
+ARG SICKRAGE_URL=https://github.com/SickRage/SickRage/archive/${SICKRAGE_VERSION}.tar.gz
 
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
+ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
 
 ARG SICKRAGE_USER=sickrage
 ARG SICKRAGE_UID=1000
@@ -31,11 +33,11 @@ RUN mkdir -p ${SICKRAGE_INSTALLDIR}
 RUN mkdir -p ${SICKRAGE_CONFDIR}
 RUN mkdir -p ${SICKRAGE_DATADIR}
 
-RUN wget https://github.com/SickRage/SickRage/archive/${SICKRAGE_VERSION}.tar.gz -O /tmp/sickrage.tar.gz
+RUN wget ${SICKRAGE_URL} -O /tmp/sickrage.tar.gz
 RUN tar --strip-components=1  -C ${SICKRAGE_INSTALLDIR} -xvzf /tmp/sickrage.tar.gz
 RUN rm -rf /tmp/sickrage.tar.gz
 
-RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm /tmp/dockerize.tar.gz
 

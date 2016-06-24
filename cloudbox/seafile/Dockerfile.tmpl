@@ -25,6 +25,7 @@ ARG SEAFILE_GID=1000
 
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
+ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
 
 ARG SEAFILE_SEAHUB_PORT=8000
 ARG SEAFILE_SERVER_PORT=8082
@@ -44,7 +45,7 @@ RUN adduser --system -gid ${SEAFILE_GID} --uid ${SEAFILE_UID} ${SEAFILE_USER}
 RUN mkdir -p ${SEAFILE_INSTALLDIR}
 RUN mkdir -p ${SEAFILE_DATADIR}
 
-RUN wget https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz -O /tmp/dockerize.tar.gz
+RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
 RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
 RUN rm -rf /tmp/dockerize.tar.gz
 
