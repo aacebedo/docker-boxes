@@ -67,7 +67,7 @@ RUN rm -rf /tmp/nginx.tar.gz
 WORKDIR /tmp/nginx
 RUN ./configure --with-cc-opt='-g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2' \
  --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now' \
- --prefix=/usr/local --conf-path=${SEAFILE_INSTALLDIR}/conf/nginx.conf \
+ --prefix=/opt/nginx --conf-path=${SEAFILE_INSTALLDIR}/conf/nginx.conf \
  --http-log-path=${SEAFILE_INSTALLDIR}/logs/nginx/access.log --error-log-path=${SEAFILE_INSTALLDIR}/logs/nginx/error.log \
  --lock-path=${SEAFILE_INSTALLDIR}/run/nginx.lock --pid-path=${SEAFILE_INSTALLDIR}/run/nginx.pid --http-client-body-temp-path=${SEAFILE_INSTALLDIR}/run/body \
 --http-fastcgi-temp-path=${SEAFILE_INSTALLDIR}/run/nginx --http-proxy-temp-path=${SEAFILE_INSTALLDIR}/run/nginx \
@@ -92,15 +92,16 @@ RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${DOCKERIZE_INSTALLDIR}
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} /opt/nginx
 
 RUN chmod u+x ${SEAFILE_INSTALLDIR}/entrypoint.sh
 RUN chmod u+x ${SEAFILE_INSTALLDIR}/seafile-installer.py
 
-RUN setcap 'cap_net_bind_service=+ep' `which nginx`
+RUN setcap 'cap_net_bind_service=+ep' /opt/nginx/sbin/nginx
 
 EXPOSE ${SEAFILE_PORT}
 
-#USER ${SEAFILE_USER}
+USER ${SEAFILE_USER}
 WORKDIR ${SEAFILE_INSTALLDIR}
 
 ENTRYPOINT ["./entrypoint.sh"]

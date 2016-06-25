@@ -23,9 +23,9 @@ storageFile = "{{.Env.TRAEFIK_DATADIR}}/acme.json"
 
 entryPoint = "https"
 
-onDemand = true
+onDemand = false
 
-caServer = "https://acme-staging.api.letsencrypt.org/directory"
+#caServer = "https://acme-staging.api.letsencrypt.org/directory"
 
 [[acme.domains]]
    main = "{{.Env.TRAEFIK_DOMAIN}}"

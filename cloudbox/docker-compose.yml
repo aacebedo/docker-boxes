@@ -5,6 +5,7 @@ services:
       context: ./seafile
       args:
         DOCKERIZE_ARCH: ${DOCKERIZE_ARCH}
+        SEAFILE_VERSION: ${SEAFILE_VERSION}
         SEAFILE_URL:    ${SEAFILE_URL}
     labels:
       - traefik.frontend.rule=Host:${SEAFILE_HOSTNAME}
