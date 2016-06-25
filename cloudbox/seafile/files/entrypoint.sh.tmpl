@@ -11,12 +11,12 @@ if [ ! -d "{{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest" ]; then
   export SEAFILE_HOSTNAME={{.Env.SEAFILE_HOSTNAME}}
   export SEAFILE_PROTOCOL={{.Env.SEAFILE_PROTOCOL}}
   export APACHE2_CONFDIR={{.Env.APACHE2_CONFDIR}}
-  dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
   export SEAFILE_ID=`grep "ID" {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf | cut -d ' ' -f 3`
-  dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
   {{.Env.SEAFILE_INSTALLDIR}}/seafile-installer.py configure --install-dir {{.Env.SEAFILE_INSTALLDIR}} --admin-email ${SEAFILE_ADMIN_EMAIL} --admin-password ${SEAFILE_ADMIN_PASSWORD}
   export SEAFILE_SECRETKEY=`grep "SECRET_KEY" {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py | cut -d ' ' -f 3`
-  dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
 fi
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seafile.sh start
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seahub.sh start-fastcgi {{.Env.SEAFILE_SEAHUB_PORT}}

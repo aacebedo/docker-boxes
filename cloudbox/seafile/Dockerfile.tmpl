@@ -28,6 +28,9 @@ ARG SEAFILE_GID=1000
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
 ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
+ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
+
+ARG NGINX_VERSION=1.11.1
 
 ARG SEAFILE_SEAHUB_PORT=8000
 ARG SEAFILE_SERVER_PORT=8082
@@ -46,17 +49,21 @@ RUN adduser --system -gid ${SEAFILE_GID} --uid ${SEAFILE_UID} ${SEAFILE_USER}
 
 RUN mkdir -p ${SEAFILE_INSTALLDIR}
 RUN mkdir -p ${SEAFILE_DATADIR}
-
-RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
-RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
-RUN rm -rf /tmp/dockerize.tar.gz
-
-RUN wget http://nginx.org/download/nginx-1.11.1.tar.gz -O /tmp/nginx.tar.gz
-RUN mkdir /tmp/nginx
-RUN tar --strip-components=1 -C /tmp/nginx -xzvf /tmp/nginx.tar.gz
-RUN rm -rf /tmp/nginx.tar.gz
+RUN mkdir -p ${DOCKERIZE_INSTALLDIR}
+RUN mkdir -p ${SEAFILE_INSTALLDIR}/run
 RUN mkdir -p ${SEAFILE_INSTALLDIR}/logs/nginx
 RUN mkdir -p ${SEAFILE_INSTALLDIR}/run/nginx
+RUN mkdir -p /tmp/nginx
+
+RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C ${DOCKERIZE_INSTALLDIR} 
+RUN rm -rf /tmp/dockerize.tar.gz
+
+RUN wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -O /tmp/nginx.tar.gz
+
+RUN tar --strip-components=1 -xzvf /tmp/nginx.tar.gz -C /tmp/nginx
+RUN rm -rf /tmp/nginx.tar.gz
+
 WORKDIR /tmp/nginx
 RUN ./configure --with-cc-opt='-g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2' \
  --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now' \
@@ -72,7 +79,7 @@ RUN rm -rf /tmp/nginx
 RUN apt remove build-essential libssl-dev libxml2-dev libpcre3-dev libxslt-dev -y --force-yes
 
 COPY files/entrypoint.sh.tmpl ${SEAFILE_INSTALLDIR}/entrypoint.sh.tmpl
-RUN dockerize -template ${SEAFILE_INSTALLDIR}/entrypoint.sh.tmpl:${SEAFILE_INSTALLDIR}/entrypoint.sh
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${SEAFILE_INSTALLDIR}/entrypoint.sh.tmpl:${SEAFILE_INSTALLDIR}/entrypoint.sh
 
 COPY files/seafile-installer.py ${SEAFILE_INSTALLDIR}/seafile-installer.py
 COPY files/ccnet.conf.tmpl ${SEAFILE_INSTALLDIR}/conf/ccnet.conf.tmpl
@@ -81,14 +88,13 @@ COPY files/nginx.conf.tmpl ${SEAFILE_INSTALLDIR}/conf/nginx.conf.tmpl
 
 RUN wget ${SEAFILE_URL} -O /tmp/seafile.tar.gz
 
-RUN chmod u+x ${SEAFILE_INSTALLDIR}/entrypoint.sh
-RUN chmod u+x ${SEAFILE_INSTALLDIR}/seafile-installer.py
-
-RUN mkdir -p ${SEAFILE_INSTALLDIR}/run
-
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_INSTALLDIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
 RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${SEAFILE_DATADIR}
+RUN chown -R ${SEAFILE_USER}:${SEAFILE_GROUP} ${DOCKERIZE_INSTALLDIR}
+
+RUN chmod u+x ${SEAFILE_INSTALLDIR}/entrypoint.sh
+RUN chmod u+x ${SEAFILE_INSTALLDIR}/seafile-installer.py
 
 RUN setcap 'cap_net_bind_service=+ep' `which nginx`
 
