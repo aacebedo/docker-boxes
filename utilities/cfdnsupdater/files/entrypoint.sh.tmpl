@@ -1,7 +1,3 @@
 #!/usr/bin/env sh
-export CFDNSUPDATER_DOMAIN={{.Env.CFDNSUPDATER_DOMAIN}}
-export CFDNSUPDATER_APIKEY={{.Env.CFDNSUPDATER_APIKEY}}
-export CFDNSUPDATER_PERIOD={{.Env.CFDNSUPDATER_PERIOD}}
-export CFDNSUPDATER_RECORDTYPES={{.Env.CFDNSUPDATER_RECORDTYPES}}
-export CFDNSUPDATER_RECORDNAMES={{.Env.CFDNSUPDATER_RECORDNAMES}}
-dockerize -template {{.Env.CFDNSUPDATER_CONFDIR}}/cfdnsupdater.conf.tmpl:{{.Env.CFDNSUPDATER_CONFDIR}}/cfdnsupdater.conf ./cfdnsupdater -c {{.Env.CFDNSUPDATER_CONFDIR}}/cfdnsupdater.conf
+{{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -template {{.Env.CFDNSUPDATER_INSTALLDIR}}/cfdnsupdater.conf.tmpl:{{.Env.CFDNSUPDATER_CONFDIR}}/cfdnsupdater.conf \
+ ./usr/local/bin/cfdnsupdater -v -c {{.Env.CFDNSUPDATER_CONFDIR}}/cfdnsupdater.conf

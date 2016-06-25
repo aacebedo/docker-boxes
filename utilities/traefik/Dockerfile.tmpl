@@ -19,6 +19,7 @@ ARG TRAEFIK_GID=1000
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
 ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
+ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
 ARG TRAEFIK_ARCH=amd64
 ARG TRAEFIK_URL=https://github.com/containous/traefik/releases/download/v${TRAEFIK_VERSION}/traefik_linux-${TRAEFIK_ARCH}
@@ -37,21 +38,24 @@ RUN adduser -G ${TRAEFIK_GROUP} -u ${TRAEFIK_UID} -S -H ${TRAEFIK_USER}
 RUN mkdir -p ${TRAEFIK_INSTALLDIR}
 RUN mkdir -p ${TRAEFIK_CONFDIR}
 RUN mkdir -p ${TRAEFIK_DATADIR}
+RUN mkdir -p ${DOCKERIZE_INSTALLDIR}
 
 RUN wget ${TRAEFIK_URL} -O ${TRAEFIK_INSTALLDIR}/traefik
 
 RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
-RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C ${DOCKERIZE_INSTALLDIR}
 RUN rm /tmp/dockerize.tar.gz
 
-COPY ./files/traefik.conf.tmpl ${TRAEFIK_CONFDIR}/traefik.conf.tmpl
+COPY ./files/traefik.conf.tmpl ${TRAEFIK_INSTALLDIR}/traefik.conf.tmpl
 
 COPY files/entrypoint.sh.tmpl ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl
-RUN dockerize -template ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl:${TRAEFIK_INSTALLDIR}/entrypoint.sh
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl:${TRAEFIK_INSTALLDIR}/entrypoint.sh
 
 RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${TRAEFIK_CONFDIR}
 RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${TRAEFIK_DATADIR}
 RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${TRAEFIK_INSTALLDIR}
+RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${DOCKERIZE_INSTALLDIR}
+
 RUN chmod a+x ${TRAEFIK_INSTALLDIR}/traefik
 RUN chmod u+x ${TRAEFIK_INSTALLDIR}/entrypoint.sh
 
