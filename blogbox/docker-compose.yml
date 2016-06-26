@@ -1,14 +1,18 @@
 version: '2'
 services:
   ghost:
-    build: ./ghost
+    build: 
+      context: ./ghost
+      args:
+        DOCKERIZE_ARCH: ${DOCKERIZE_ARCH}
+        GHOST_VERSION: 0.8.0
     labels:
-      - traefik.frontend.rule=Host:blog.${DOMAIN} 
+      - traefik.frontend.rule=Host:${GHOST_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
     networks:
       - blogbox_network
     environment:
-      - GHOST_URL=https://blog.${DOMAIN}
+      - GHOST_URL=https://${GHOST_HOSTNAME}
     volumes:
       - ${GHOST_DATADIR}:/var/lib/ghost
 
