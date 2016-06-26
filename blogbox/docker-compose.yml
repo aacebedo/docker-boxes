@@ -9,12 +9,13 @@ services:
     labels:
       - traefik.frontend.rule=Host:${GHOST_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
-    networks:
-      - blogbox_network
+    restart: always
     environment:
       - GHOST_URL=https://${GHOST_HOSTNAME}
     volumes:
       - ${GHOST_DATADIR}:/var/lib/ghost
+    networks:
+      - blogbox_network
 
 networks:
   blogbox_network:
