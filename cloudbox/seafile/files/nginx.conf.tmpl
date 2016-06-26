@@ -9,51 +9,42 @@ events {
 }
 
 http {
-
 	##
 	# Basic Settings
 	##
-
 	sendfile on;
 	tcp_nopush on;
 	tcp_nodelay on;
 	keepalive_timeout 65;
 	types_hash_max_size 2048;
-
 	default_type application/octet-stream;
 
 	##
 	# SSL Settings
 	##
-
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
 	ssl_prefer_server_ciphers on;
 
 	##
 	# Logging Settings
 	##
-
 	access_log {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/access.log;
 	error_log {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/error.log;
 
 	##
 	# Gzip Settings
 	##
-
 	gzip on;
 	gzip_disable "msie6";
 
 	##
 	# Virtual Host Configs
 	##
-
-	#include /etc/nginx/conf.d/*.conf;
-
         client_body_temp_path /tmp 1 2;
         client_body_buffer_size 256k;
         client_body_in_file_only off;
 
-server {
+  server {
     listen      {{.Env.SEAFILE_PORT}} default;
     server_name {{.Env.SEAFILE_HOSTNAME}};
 
@@ -74,8 +65,6 @@ server {
         fastcgi_param   SERVER_NAME        $server_name;
         fastcgi_param   REMOTE_ADDR        $remote_addr;
 
-        access_log      {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/seahub.access.log;
-        error_log       {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/seahub.error.log;
         fastcgi_read_timeout 36000;
     }
 
@@ -89,9 +78,5 @@ server {
         proxy_send_timeout  36000s;
         send_timeout  36000s;
     }
-
-    location /media {
-        root {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seahub;
-    }
-}
+  }
 }

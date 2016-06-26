@@ -7,6 +7,7 @@ services:
         DOCKERIZE_ARCH: ${DOCKERIZE_ARCH}
         SEAFILE_VERSION: ${SEAFILE_VERSION}
         SEAFILE_URL:    ${SEAFILE_URL}
+        SEAFILE_VERSION: ${SEAFILE_VERSION}
     labels:
       - traefik.frontend.rule=Host:${SEAFILE_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
@@ -20,6 +21,7 @@ services:
       - SEAFILE_PROTOCOL=${SEAFILE_PROTOCOL}
     volumes:
       - ${SEAFILE_DATADIR}:/var/lib/seafile
+      - ${SEAFILE_CONFDIR}:/opt/seafile/conf
 
 networks:
   cloudbox_network:

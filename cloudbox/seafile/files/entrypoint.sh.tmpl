@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-if [ ! -d "{{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest" ]; then
+if [ ! -d "{{.Env.SEAFILE_INSTALLDIR}}/conf" ]; then
   {{.Env.SEAFILE_INSTALLDIR}}/seafile-installer.py install --install-dir {{.Env.SEAFILE_INSTALLDIR}} --data-dir {{.Env.SEAFILE_DATADIR}} --hostname ${SEAFILE_HOSTNAME} --server-name ${SEAFILE_SERVERNAME} --server-port {{.Env.SEAFILE_SERVER_PORT}} /tmp/seafile.tar.gz
   export SEAFILE_SEAHUB_PORT={{.Env.SEAFILE_SEAHUB_PORT}}
   export SEAFILE_SERVER_PORT={{.Env.SEAFILE_SERVER_PORT}}
@@ -9,14 +9,14 @@ if [ ! -d "{{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest" ]; then
   export SEAFILE_GROUP={{.Env.SEAFILE_GROUP}}
   export SEAFILE_PORT={{.Env.SEAFILE_PORT}}
   export APACHE2_CONFDIR={{.Env.APACHE2_CONFDIR}}
-  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/nginx.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
   export SEAFILE_ID=`grep "ID" {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf | cut -d ' ' -f 3`
-  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force  -template {{.Env.SEAFILE_INSTALLDIR}}/ccnet.conf.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/ccnet.conf
   {{.Env.SEAFILE_INSTALLDIR}}/seafile-installer.py configure --install-dir {{.Env.SEAFILE_INSTALLDIR}} --admin-email ${SEAFILE_ADMIN_EMAIL} --admin-password ${SEAFILE_ADMIN_PASSWORD}
   export SEAFILE_SECRETKEY=`grep "SECRET_KEY" {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py | cut -d ' ' -f 3`
-  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
+  {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -force -template {{.Env.SEAFILE_INSTALLDIR}}/seahub_settings.py.tmpl:{{.Env.SEAFILE_INSTALLDIR}}/conf/seahub_settings.py
 fi
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seafile.sh start
 {{.Env.SEAFILE_INSTALLDIR}}/seafile-server-latest/seahub.sh start-fastcgi {{.Env.SEAFILE_SEAHUB_PORT}}
 
-/opt/nginx/sbin/nginx -c {{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
+{{.Env.NGINX_INSTALLDIR}}/sbin/nginx -c {{.Env.SEAFILE_INSTALLDIR}}/conf/nginx.conf
