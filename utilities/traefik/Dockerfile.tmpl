@@ -2,7 +2,7 @@ FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 RUN apk update
-RUN apk add git zsh openssl ca-certificates vim libcap
+RUN apk add zsh openssl ca-certificates vim libcap
 
 ARG TRAEFIK_INSTALLDIR=/opt/traefik
 ARG TRAEFIK_CONFDIR=/etc/traefik

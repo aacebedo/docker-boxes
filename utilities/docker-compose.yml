@@ -6,6 +6,7 @@ services:
       args:
         DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
         TRAEFIK_ARCH:           ${TRAEFIK_ARCH}
+        TRAEFIK_VERSION:        ${TRAEFIK_VERSION}
     labels:
       - traefik.enable=false
     networks:
@@ -27,6 +28,7 @@ services:
       args:
         DOCKERIZE_ARCH:           ${DOCKERIZE_ARCH}
         CFDNSUPDATER_ARCH:        ${CFDNSUPDATER_ARCH}
+        CFDNSUPDATER_VERSION:     ${CFDNSUPDATER_VERSION}
     environment:
       - CFDNSUPDATER_DOMAIN=${CFDNSUPDATER_DOMAIN}
       - CFDNSUPDATER_EMAIL=${CFDNSUPDATER_EMAIL}

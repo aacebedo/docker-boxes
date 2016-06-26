@@ -1,7 +1,7 @@
 FROM {{.Env.BASE_IMAGE}}
 
 RUN apk update
-RUN apk add zsh ca-certificates wget
+RUN apk add zsh vim ca-certificates wget
 
 ARG CFDNSUPDATER_INSTALLDIR=/opt/cfdnsupdater
 ARG CFDNSUPDATER_CONFDIR=/etc
