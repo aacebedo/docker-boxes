@@ -41,6 +41,11 @@ ENV SEAFILE_PROTOCOL       https
 ENV SEAFILE_ADMIN_EMAIL    admin@example.com
 ENV SEAFILE_ADMIN_PASSWORD password
 
+ENV SEAFILE_SMTP_TLS true
+ENV SEAFILE_SMTP_SERVER smtp.example.com
+ENV SEAFILE_SMTP_EMAIL admin@example.com
+ENV SEAFILE_SMTP_PASSWORD password
+
 RUN addgroup --system --gid ${SEAFILE_GID} ${SEAFILE_GROUP}
 RUN adduser --system -gid ${SEAFILE_GID} --uid ${SEAFILE_UID} ${SEAFILE_USER} 
 
