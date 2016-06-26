@@ -5,6 +5,7 @@ services:
       context: ./sickrage
       args:
         DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        SICKRAGE_VERSION:       ${SICKRAGE_VERSION}
     labels:
       - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
@@ -20,6 +21,7 @@ services:
       context: ./couchpotato
       args:
         DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        COUCHPOTATO_VERSION:    ${COUCHPOTATO_VERSION}
     labels:
       - traefik.frontend.rule=Host:couchpotato.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
@@ -34,7 +36,8 @@ services:
     build: 
       context: ./nzbget
       args:
-        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+        DOCKERIZE_ARCH:       ${DOCKERIZE_ARCH}
+        NZBGET_VERSION:       ${NZBGET_VERSION}
     labels:
       - traefik.frontend.rule=Host:nzbget.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
