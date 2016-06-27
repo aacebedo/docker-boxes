@@ -2,7 +2,9 @@ FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 RUN apk update
-RUN apk add git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap
+RUN apk add tzdata git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap
+
+ARG TIMEZONE=Europe/Paris
 
 ARG SICKRAGE_INSTALLDIR=/opt/sickrage
 ARG SICKRAGE_CONFDIR=/etc/sickrage
@@ -26,6 +28,9 @@ ARG SICKRAGE_PORT=80
 
 ENV SICKRAGE_USERNAME     admin
 ENV SICKRAGE_PASSWORD     password
+
+RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN addgroup -g ${SICKRAGE_GID} -S ${SICKRAGE_GROUP}
 RUN adduser -G ${SICKRAGE_GROUP} -u ${SICKRAGE_UID} -S -H ${SICKRAGE_USER} 

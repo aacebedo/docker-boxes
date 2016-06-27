@@ -3,12 +3,14 @@ MAINTAINER Alexandre ACEBEDO
 
 RUN apt update 
 RUN apt install python python-pip python-imaging python3 sqlite python-pillow \
-    python-dev libldap2-dev zsh less vim libevent-dev zlib1g-dev \
+    python-dev libldap2-dev zsh less vim libevent-dev zlib1g-dev tzdata \
     libglib2.0-dev libffi-dev libjansson4 libsasl2-dev wget python3-pip -y --force-yes
 
 RUN pip install python-ldap
 RUN pip3 install --upgrade pip
 RUN pip3 install pexpect
+
+ARG TIMEZONE=Europe/Paris
 
 ARG SEAFILE_INSTALLDIR=/opt/seafile
 ARG SEAFILE_DATADIR=/var/lib/seafile
@@ -40,6 +42,9 @@ ENV SEAFILE_PROTOCOL       https
 
 ENV SEAFILE_ADMIN_EMAIL    admin@example.com
 ENV SEAFILE_ADMIN_PASSWORD password
+
+RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN addgroup --system --gid ${SEAFILE_GID} ${SEAFILE_GROUP}
 RUN adduser --system -gid ${SEAFILE_GID} --uid ${SEAFILE_UID} ${SEAFILE_USER} 

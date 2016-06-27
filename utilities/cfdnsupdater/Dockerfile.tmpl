@@ -1,7 +1,9 @@
 FROM {{.Env.BASE_IMAGE}}
 
 RUN apk update
-RUN apk add zsh vim ca-certificates wget
+RUN apk add tzdata zsh vim ca-certificates wget
+
+ARG TIMEZONE=Europe/Paris
 
 ARG CFDNSUPDATER_INSTALLDIR=/opt/cfdnsupdater
 ARG CFDNSUPDATER_CONFDIR=/etc
@@ -26,6 +28,9 @@ ENV CFDNSUPDATER_APIKEY=None
 ENV CFDNSUPDATER_PERIOD=90
 ENV CFDNSUPDATER_RECORDTYPES=""
 ENV CFDNSUPDATER_RECORDNAMES=""
+
+RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN addgroup -g ${CFDNSUPDATER_GID} -S ${CFDNSUPDATER_GROUP}
 RUN adduser -G ${CFDNSUPDATER_GROUP} -u ${CFDNSUPDATER_UID} -S -H ${CFDNSUPDATER_USER} 
