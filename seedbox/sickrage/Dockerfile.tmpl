@@ -29,7 +29,7 @@ ARG SICKRAGE_PORT=80
 ENV SICKRAGE_USERNAME     admin
 ENV SICKRAGE_PASSWORD     password
 
-RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN addgroup -g ${SICKRAGE_GID} -S ${SICKRAGE_GROUP}

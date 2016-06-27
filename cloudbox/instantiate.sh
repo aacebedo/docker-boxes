@@ -14,6 +14,11 @@ export SEAFILE_PROTOCOL="https"
 export SEAFILE_URL="https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_${SEAFILE_VERSION}_x86-64.tar.gz"
 export SEAFILE_DATADIR="/tmp/seafile/data"
 export SEAFILE_CONFDIR="/tmp/seafile/conf"
+export SEAFILE_SMTP_TLS="true"
+export SEAFILE_SMTP_SERVER="smtp.example.com"
+export SEAFILE_SMTP_EMAIL="admin@example"
+export SEAFILE_SMTP_PASSWORD="password"
+
 export CLOUDBOX_NETWORK="traefik_network"
 
 dockerize -force -template ./seafile/Dockerfile.tmpl:./seafile/Dockerfile

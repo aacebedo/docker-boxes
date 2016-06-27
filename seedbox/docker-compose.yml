@@ -9,6 +9,7 @@ services:
     labels:
       - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
+    restart: always
     volumes:
       - ${NZBSDIR}:/mnt/data/downloads/nzbgs
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
@@ -25,6 +26,7 @@ services:
     labels:
       - traefik.frontend.rule=Host:couchpotato.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    restart: always
     volumes:
       - ${NZBSDIR}:/mnt/data/downloads/nzbs
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
@@ -41,6 +43,7 @@ services:
     labels:
       - traefik.frontend.rule=Host:nzbget.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    restart: always
     volumes:
       - ${NZBSDIR}:/mnt/data
     networks:
@@ -54,6 +57,7 @@ services:
     labels:
       - traefik.frontend.rule=Host:transmission.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    restart: always
     volumes:
       - ${TORRENTSDIR}:/mnt/data
     networks:

@@ -24,7 +24,7 @@ ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
 ARG COUCHPOTATO_PORT=80
 
-RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN addgroup -g ${COUCHPOTATO_GID} -S ${COUCHPOTATO_GROUP}

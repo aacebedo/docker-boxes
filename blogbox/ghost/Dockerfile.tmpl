@@ -24,7 +24,7 @@ ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOC
 
 ENV GHOST_HOSTNAME http://my.domain.com
 
-RUN cp /usr/share/zoneinfo/{TIMEZONE} /etc/localtime
+RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN mkdir -p ${GHOST_INSTALLDIR}
