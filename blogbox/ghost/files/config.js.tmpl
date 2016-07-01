@@ -12,14 +12,14 @@ config = {
         database: {
             client: 'sqlite3',
             connection: {
-                filename: '{{.Env.GHOST_DATADIR}}/ghost.db'
+                filename: '<@.Env.GHOST_DATADIR@>/ghost.db'
             },
             debug: false
         },
 
         server: {
             host: '0.0.0.0',
-            port: '{{.Env.GHOST_PORT}}'
+            port: '<@.Env.GHOST_PORT@>'
         }
     }
 };

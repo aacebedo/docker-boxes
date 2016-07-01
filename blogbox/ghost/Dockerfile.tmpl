@@ -2,7 +2,7 @@ FROM {{.Env.BASE_IMAGE}}
 MAINTAINER Alexandre ACEBEDO
 
 RUN apk update
-RUN apk add tzdate python git unzip wget tar zsh openssl ca-certificates vim bash nodejs-lts libcap
+RUN apk add tzdata python git unzip wget tar zsh openssl ca-certificates vim bash nodejs-lts libcap
 
 ARG TIMEZONE=Europe/Paris
 ARG GHOST_INSTALLDIR=/opt/ghost
@@ -21,6 +21,7 @@ ARG GHOST_PORT=80
 ARG DOCKERIZE_VERSION=0.2.0
 ARG DOCKERIZE_ARCH=amd64
 ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
+ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
 ENV GHOST_HOSTNAME http://my.domain.com
 
@@ -29,6 +30,7 @@ RUN echo "${TIMEZONE}" > /etc/timezone
 
 RUN mkdir -p ${GHOST_INSTALLDIR}
 RUN mkdir -p ${GHOST_DATADIR}
+RUN mkdir -p ${DOCKERIZE_INSTALLDIR}
 
 RUN addgroup -g ${GHOST_GID} -S ${GHOST_GROUP}
 RUN adduser -G ${GHOST_GROUP} -u ${GHOST_UID} -S -H ${GHOST_USER} 
@@ -39,18 +41,21 @@ RUN unzip /tmp/ghost.zip
 RUN rm -rf /tmp/ghost.zip
 
 RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
-RUN tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz
-RUN rm -rf /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C ${DOCKERIZE_INSTALLDIR}
+RUN rm /tmp/dockerize.tar.gz
 
 COPY ./files/entrypoint.sh.tmpl ${GHOST_INSTALLDIR}/entrypoint.sh.tmpl
-RUN dockerize -template ${GHOST_INSTALLDIR}/entrypoint.sh.tmpl:${GHOST_INSTALLDIR}/entrypoint.sh
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${GHOST_INSTALLDIR}/entrypoint.sh.tmpl:${GHOST_INSTALLDIR}/entrypoint.sh
 
 RUN npm install --production 
 
 COPY ./files/config.js.tmpl ${GHOST_INSTALLDIR}/config.js.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -force -delims "<@:@>" -template ${GHOST_INSTALLDIR}/config.js.tmpl:${GHOST_INSTALLDIR}/config.js.tmpl
 
 RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_INSTALLDIR}
 RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${GHOST_DATADIR}
+RUN chown -R ${GHOST_USER}:${GHOST_GROUP} ${DOCKERIZE_INSTALLDIR}
+
 RUN chmod u+x ${GHOST_INSTALLDIR}/entrypoint.sh
 
 RUN setcap 'cap_net_bind_service=+ep' /usr/lib/node_modules/npm/bin/npm-cli.js
