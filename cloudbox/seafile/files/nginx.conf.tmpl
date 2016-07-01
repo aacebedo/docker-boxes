@@ -1,8 +1,8 @@
 daemon off;
 
-user {{.Env.SEAFILE_USER}};
+user <@.Env.SEAFILE_USER@>;
 worker_processes auto;
-pid {{.Env.SEAFILE_INSTALLDIR}}/run/nginx.pid;
+pid <@.Env.SEAFILE_INSTALLDIR@>/run/nginx.pid;
 
 events {
 	worker_connections 768;
@@ -28,8 +28,8 @@ http {
 	##
 	# Logging Settings
 	##
-	access_log {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/access.log;
-	error_log {{.Env.SEAFILE_INSTALLDIR}}/logs/nginx/error.log;
+	access_log <@.Env.SEAFILE_INSTALLDIR@>/logs/nginx/access.log;
+	error_log <@.Env.SEAFILE_INSTALLDIR@>/logs/nginx/error.log;
 
 	##
 	# Gzip Settings
@@ -45,13 +45,13 @@ http {
         client_body_in_file_only off;
 
   server {
-    listen      {{.Env.SEAFILE_PORT}} default;
+    listen      <@.Env.SEAFILE_PORT@> default;
     server_name {{.Env.SEAFILE_HOSTNAME}};
 
     proxy_set_header X-Forwarded-For $remote_addr;
 
     location / {
-        fastcgi_pass    127.0.0.1:{{.Env.SEAFILE_SEAHUB_PORT}};
+        fastcgi_pass    127.0.0.1:<@.Env.SEAFILE_SEAHUB_PORT@>;
         fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
         fastcgi_param   PATH_INFO          $fastcgi_script_name;
 
@@ -70,7 +70,7 @@ http {
 
     location /seafhttp {
         rewrite ^/seafhttp(.*)$ $1 break;
-        proxy_pass http://127.0.0.1:{{.Env.SEAFILE_SERVER_PORT}};
+        proxy_pass http://127.0.0.1:<@.Env.SEAFILE_SERVER_PORT@>;
         client_max_body_size 0;
 
         proxy_connect_timeout  36000s;

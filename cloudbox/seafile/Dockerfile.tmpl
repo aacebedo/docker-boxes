@@ -88,8 +88,13 @@ RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${SEAFILE_INSTALLDIR}/entrypoint
 
 COPY files/seafile-installer.py ${SEAFILE_INSTALLDIR}/seafile-installer.py
 COPY files/ccnet.conf.tmpl ${SEAFILE_INSTALLDIR}/ccnet.conf.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -delims "<@:@>" -force -template ${SEAFILE_INSTALLDIR}/ccnet.conf.tmpl:${SEAFILE_INSTALLDIR}/ccnet.conf.tmpl
+
 COPY files/seahub_settings.py.tmpl ${SEAFILE_INSTALLDIR}/seahub_settings.py.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -delims "<@:@>" -force -template ${SEAFILE_INSTALLDIR}/seahub_settings.py.tmpl:${SEAFILE_INSTALLDIR}/seahub_settings.py.tmpl
+
 COPY files/nginx.conf.tmpl ${SEAFILE_INSTALLDIR}/nginx.conf.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -delims "<@:@>" -force -template ${SEAFILE_INSTALLDIR}//nginx.conf.tmpl:${SEAFILE_INSTALLDIR}/nginx.conf.tmpl
 
 RUN wget ${SEAFILE_URL} -O /tmp/seafile.tar.gz
 
