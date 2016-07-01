@@ -44,6 +44,7 @@ RUN tar -xzvf /tmp/dockerize.tar.gz -C ${DOCKERIZE_INSTALLDIR}
 RUN rm -rf /tmp/dockerize.tar.gz
 
 COPY ./files/settings.conf.tmpl ${COUCHPOTATO_INSTALLDIR}/settings.conf.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${COUCHPOTATO_INSTALLDIR}/settings.conf.tmpl:${COUCHPOTATO_CONFDIR}/settings.conf
 
 COPY ./files/entrypoint.sh.tmpl ${COUCHPOTATO_INSTALLDIR}/entrypoint.sh.tmpl
 RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${COUCHPOTATO_INSTALLDIR}/entrypoint.sh.tmpl:${COUCHPOTATO_INSTALLDIR}/entrypoint.sh

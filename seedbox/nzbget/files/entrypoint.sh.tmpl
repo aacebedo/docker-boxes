@@ -1,4 +1,2 @@
 #!/usr/bin/env sh
-export NZBGET_PORT={{.Env.NZBGET_PORT}}
-export NZBGET_SECUREPORT={{.Env.NZBGET_SECUREPORT}}
 {{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -template {{.Env.NZBGET_INSTALLDIR}}/nzbget.conf.tmpl:{{.Env.NZBGET_CONFDIR}}/nzbget.conf ./nzbget -c {{.Env.NZBGET_CONFDIR}}/nzbget.conf -s

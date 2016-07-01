@@ -23,7 +23,7 @@
 #
 # On POSIX you can use "~" as alias for home directory (e.g. "~/downloads").
 # On Windows use absolute paths (e.g. "C:\Downloads").
-MainDir={{.Env.NZBGET_DATADIR}}/downloads
+MainDir=<@.Env.NZBGET_DATADIR@>
 
 # Destination directory for downloaded files.
 #
@@ -277,7 +277,7 @@ ControlIP=0.0.0.0
 #
 # NOTE: The communication via this port is not encrypted. For encrypted
 # communication see option <SecurePort>.
-ControlPort={{.Env.NZBGET_PORT}}
+ControlPort=<@.Env.NZBGET_PORT@>
 
 # User name which NZBGet server and remote client use.
 #
@@ -350,7 +350,7 @@ SecureControl=no
 
 # Port which NZBGet server and remote client use for encrypted
 # communication (1-65535).
-SecurePort={{.Env.NZBGET_SECUREPORT}}
+SecurePort=
 
 # Full path to certificate file for encrypted communication.
 SecureCert=
@@ -380,7 +380,7 @@ AuthorizedIP=127.0.0.1
 # NOTE: This option has effect only if the program was started from
 # root-account, otherwise it is ignored and the daemon runs under
 # current user id.
-DaemonUsername={{.Env.NZBGET_USER}}
+DaemonUsername=<@.Env.NZBGET_USER@>
 
 # Specify default umask (affects file permissions) for newly created
 # files, POSIX only (000-1000).

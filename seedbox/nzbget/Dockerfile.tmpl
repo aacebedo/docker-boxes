@@ -25,7 +25,6 @@ ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOC
 ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
 ARG NZBGET_PORT=80
-ARG NZBGET_SECUREPORT=443
 
 ENV NZBGET_USERNAME    admin
 ENV NZBGET_PASSWORD    password
@@ -51,7 +50,12 @@ RUN wget ${DOCKERIZE_URL} -O /tmp/dockerize.tar.gz
 RUN tar -xzvf /tmp/dockerize.tar.gz -C ${DOCKERIZE_INSTALLDIR}
 RUN rm /tmp/dockerize.tar.gz
 
+
+
 COPY ./files/nzbget.conf.tmpl ${NZBGET_INSTALLDIR}/nzbget.conf.tmpl
+WORKDIR ${NZBGET_INSTALLDIR}
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -force -delims "<@:@>" -template ./nzbget.conf.tmpl:./nzbget.conf.tmpl
+
 
 COPY ./files/entrypoint.sh.tmpl ${NZBGET_INSTALLDIR}/entrypoint.sh.tmpl
 RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${NZBGET_INSTALLDIR}/entrypoint.sh.tmpl:${NZBGET_INSTALLDIR}/entrypoint.sh

@@ -52,6 +52,7 @@ COPY ./files/entrypoint.sh.tmpl ${SICKRAGE_INSTALLDIR}/entrypoint.sh.tmpl
 RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${SICKRAGE_INSTALLDIR}/entrypoint.sh.tmpl:${SICKRAGE_INSTALLDIR}/entrypoint.sh
 
 COPY ./files/settings.conf.tmpl ${SICKRAGE_INSTALLDIR}/settings.conf.tmpl
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -force -delims "<@:@>" -template ${SICKRAGE_INSTALLDIR}/settings.conf.tmpl:${SICKRAGE_INSTALLDIR}/settings.conf.tmpl
 
 RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_CONFDIR}
 RUN chown -R ${SICKRAGE_USER}:${SICKRAGE_GROUP} ${SICKRAGE_DATADIR}
