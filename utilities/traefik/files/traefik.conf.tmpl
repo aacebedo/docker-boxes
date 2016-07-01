@@ -2,24 +2,24 @@
 # Global configuration
 ################################################################
 
-traefikLogsFile = "{{.Env.TRAEFIK_DATADIR}}/traefik.log"
-accessLogsFile = "{{.Env.TRAEFIK_DATADIR}}/access.log"
+traefikLogsFile = "<@.Env.TRAEFIK_DATADIR@>/traefik.log"
+accessLogsFile = "<@.Env.TRAEFIK_DATADIR@>/access.log"
 
 #defaultEntryPoints = ["http", "https"]
 
 [entryPoints]
   [entryPoints.http]
-  address = ":{{.Env.TRAEFIK_PORT}}"
+  address = ":<@.Env.TRAEFIK_PORT@>"
    [entryPoints.http.redirect]
      entryPoint = "https"
   [entryPoints.https]
-  address = ":{{.Env.TRAEFIK_SECUREPORT}}"
+  address = ":<@.Env.TRAEFIK_SECUREPORT@>"
    [entryPoints.https.tls]
 
 [acme]
 email = "{{.Env.TRAEFIK_ADMIN_EMAIL}}"
 
-storageFile = "{{.Env.TRAEFIK_DATADIR}}/acme.json"
+storageFile = "<@.Env.TRAEFIK_DATADIR@>/acme.json"
 
 entryPoint = "https"
 
@@ -36,7 +36,7 @@ onDemand = false
 ################################################################
 [web]
 
-address = ":{{.Env.TRAEFIK_CONTROLPORT}}"
+address = ":<@.Env.TRAEFIK_CONTROLPORT@>"
 
 ################################################################
 # Docker configuration backend

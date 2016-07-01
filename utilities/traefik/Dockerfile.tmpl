@@ -53,6 +53,8 @@ RUN rm /tmp/dockerize.tar.gz
 
 COPY ./files/traefik.conf.tmpl ${TRAEFIK_INSTALLDIR}/traefik.conf.tmpl
 
+RUN ${DOCKERIZE_INSTALLDIR}/dockerize -force -delims "<@:@>" -template ${TRAEFIK_INSTALLDIR}/traefik.conf.tmpl:${TRAEFIK_INSTALLDIR}/traefik.conf.tmpl
+
 COPY files/entrypoint.sh.tmpl ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl
 RUN ${DOCKERIZE_INSTALLDIR}/dockerize -template ${TRAEFIK_INSTALLDIR}/entrypoint.sh.tmpl:${TRAEFIK_INSTALLDIR}/entrypoint.sh
 
@@ -61,8 +63,8 @@ RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${TRAEFIK_DATADIR}
 RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${TRAEFIK_INSTALLDIR}
 RUN chown -R ${TRAEFIK_USER}:${TRAEFIK_GROUP} ${DOCKERIZE_INSTALLDIR}
 
-RUN chmod a+x ${TRAEFIK_INSTALLDIR}/traefik
 RUN chmod u+x ${TRAEFIK_INSTALLDIR}/entrypoint.sh
+RUN chmod a+x ${TRAEFIK_INSTALLDIR}/traefik
 
 RUN setcap 'cap_net_bind_service=+ep' ${TRAEFIK_INSTALLDIR}/traefik
 
@@ -73,5 +75,4 @@ USER ${TRAEFIK_USER}
 VOLUME ["unix:///var/run/docker.sock"]
 
 WORKDIR ${TRAEFIK_INSTALLDIR}
-
 ENTRYPOINT ["./entrypoint.sh"]
