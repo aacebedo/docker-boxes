@@ -29,7 +29,9 @@ ARG NZBGET_PORT=80
 ENV NZBGET_USERNAME    admin
 ENV NZBGET_PASSWORD    password
 
-ENV TERM xterm
+ENV TERM               xterm
+
+ENV LC_ALL             en_US.utf8
 
 RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 RUN echo "${TIMEZONE}" > /etc/timezone

@@ -24,6 +24,8 @@ ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
 ARG COUCHPOTATO_PORT=80
 
+ENV LC_ALL en_US.utf8
+
 RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 RUN echo "${TIMEZONE}" > /etc/timezone
 

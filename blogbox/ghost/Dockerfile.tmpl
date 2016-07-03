@@ -23,6 +23,7 @@ ARG DOCKERIZE_ARCH=amd64
 ARG DOCKERIZE_URL=https://github.com/aacebedo/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-${DOCKERIZE_ARCH}-v${DOCKERIZE_VERSION}.tar.gz
 ARG DOCKERIZE_INSTALLDIR=/opt/dockerize
 
+ENV LC_ALL         en_US.utf8
 ENV GHOST_HOSTNAME http://my.domain.com
 
 RUN cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
