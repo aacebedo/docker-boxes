@@ -5,9 +5,9 @@ export DOCKERIZE_ARCH="amd64"
 
 export TRAEFIK_ARCH="amd64"
 export TRAEFIK_VERSION="1.0.0-rc2"
-export TRAEFIK_DOMAIN="acebedo.fr"
-export TRAEFIK_SUBDOMAINS='"seafile.acebedo.fr"'
-export TRAEFIK_ADMIN_EMAIL="alexandre@acebedo.fr"
+export TRAEFIK_DOMAIN="example.com"
+export TRAEFIK_SUBDOMAINS='"seafile.example.com"'
+export TRAEFIK_ADMIN_EMAIL="admin@example.com"
 export TRAEFIK_DATADIR="/tmp/traefik"
 export TRAEFIK_PORT="80"
 export TRAEFIK_SECUREPORT="443"
@@ -22,7 +22,14 @@ export CFDNSUPDATER_RECORDNAMES=""
 export CFDNSUPDATER_ARCH="amd64"
 export CFDNSUPDATER_VERSION="0.9.2"
 
+export DNSDOCK_ARCH="amd64"
+export DNSDOCK_VERSION="1.12.1"
+export DNSDOCK_DOMAIN="example.com"
+export DNSDOCK_PORT="53"
+export DNSDOCK_CONTROLPORT="83"
+
 export UTILITIES_NETWORK="traefik_network"
 
 dockerize -force -template ./traefik/Dockerfile.tmpl:./traefik/Dockerfile
 dockerize -force -template ./cfdnsupdater/Dockerfile.tmpl:./cfdnsupdater/Dockerfile
+dockerize -force -template ./dnsdock/Dockerfile.tmpl:./dnsdock/Dockerfile

@@ -41,9 +41,25 @@ services:
     restart: always
     labels:
       - traefik.enable=false
-    networks:
-      - utilities_network
    
+  dnsdock:
+    build:
+      context: ./dnsdock
+      args:
+        DOCKERIZE_ARCH:      ${DOCKERIZE_ARCH}
+        DNSDOCK_ARCH:        ${DNSDOCK_ARCH}
+        DNSDOCK_VERSION:     ${DNSDOCK_VERSION}
+    environment:
+      - DNSDOCK_DOMAIN=${DNSDOCK_DOMAIN}
+    restart: always
+    labels:
+      - traefik.enable=false
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - ${DNSDOCK_PORT}:53
+      - ${DNSDOCK_CONTROLPORT}:80
+
 networks:
   utilities_network:
     external:
