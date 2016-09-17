@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-{{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -template {{.Env.SICKRAGE_INSTALLDIR}}/settings.conf.tmpl:{{.Env.SICKRAGE_CONFDIR}}/settings.conf \
-./SickBeard.py --datadir={{.Env.SICKRAGE_DATADIR}} --config={{.Env.SICKRAGE_CONFDIR}}/settings.conf

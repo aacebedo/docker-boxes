@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-{{.Env.DOCKERIZE_INSTALLDIR}}/dockerize -template {{.Env.TRAEFIK_INSTALLDIR}}/traefik.conf.tmpl:{{.Env.TRAEFIK_CONFDIR}}/traefik.conf \
-  ./traefik -C {{.Env.TRAEFIK_CONFDIR}}/traefik.conf
