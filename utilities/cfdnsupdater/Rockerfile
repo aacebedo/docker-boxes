@@ -1,0 +1,52 @@
+{{$CFDNSUPDATER_VERSION := (or .CFDNSUPDATER_VERSION "0.9.2")}}
+{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$CFDNSUPDATER_UID := (or .CFDNSUPDATER_UID 1000)}}
+{{$CFDNSUPDATER_GID := (or .CFDNSUPDATER_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+
+MAINTAINER Alexandre ACEBEDO
+
+RUN apk update
+RUN apk add tzdata zsh openssl ca-certificates vim libcap supervisor
+
+ENV LC_ALL               en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timezone
+
+RUN addgroup -g {{$CFDNSUPDATER_GID}} -S cfdnsupdater
+RUN adduser -G cfdnsupdater -u {{$CFDNSUPDATER_UID}} -S -H cfdnsupdater
+
+RUN mkdir -p /etc/cfdnsupdater
+RUN mkdir -p /var/log/supervisor
+
+RUN wget https://github.com/aacebedo/cfdnsupdater/releases/download/{{$CFDNSUPDATER_VERSION}}/cfdnsupdater.{{.ARCH}}.{{$CFDNSUPDATER_VERSION}}.tar -O /tmp/cfdnsupdater.tar
+RUN tar -xvf /tmp/cfdnsupdater.tar -C /
+RUN rm -rf /tmp/cfdnsupdater.tar
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
+COPY files/cfdnsupdater.conf.tmpl /etc/cfdnsupdater/cfdnsupdater.conf.tmpl
+COPY files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R cfdnsupdater:cfdnsupdater /etc/cfdnsupdater
+
+RUN chmod a+x /usr/local/bin/cfdnsupdater
+RUN chmod a+x /usr/local/bin/dockerize
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+
+TAG cfdnsupdater:{{$CFDNSUPDATER_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG cfdnsupdater:latest
+{{end}}

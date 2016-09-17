@@ -1,0 +1,61 @@
+{{$SICKRAGE_VERSION := (or .SICKRAGE_VERSION "2016.09.10-1")}}
+
+{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$SICKRAGE_UID := (or .SICKRAGE_UID 1000)}}
+{{$SICKRAGE_GID := (or .SICKRAGE_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+MAINTAINER Alexandre ACEBEDO
+
+RUN apk update
+RUN apk add tzdata git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap supervisor
+
+ENV LC_ALL               en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timez
+
+RUN addgroup -g {{$SICKRAGE_GID}} -S sickrage
+RUN adduser -G sickrage -u {{$SICKRAGE_UID}} -S -H sickrage
+
+RUN mkdir -p /opt/sickrage
+RUN mkdir -p /etc/sickrage
+RUN mkdir -p /var/lib/sickrage
+RUN mkdir -p /var/log/supervisor
+
+RUN wget https://github.com/SickRage/SickRage/archive/{{$SICKRAGE_VERSION}}.tar.gz -O /tmp/sickrage.tar.gz
+RUN tar --strip-components=1 -xvzf /tmp/sickrage.tar.gz -C /opt/sickrage 
+RUN rm -rf /tmp/sickrage.tar.gz
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
+COPY files/settings.conf.tmpl /etc/sickrage/settings.conf.tmpl
+COPY files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R sickrage:sickrage /etc/sickrage
+RUN chown -R sickrage:sickrage /var/lib/sickrage
+RUN chown -R sickrage:sickrage /opt/sickrage
+ 
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
+
+VOLUME ["/var/lib/sickrage"]
+
+EXPOSE 80
+
+WORKDIR /opt/sickrage
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+
+TAG sickrage:{{$SICKRAGE_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG sickrage:latest
+{{end}}
+

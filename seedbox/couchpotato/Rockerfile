@@ -1,0 +1,55 @@
+{{$COUCHPOTATO_VERSION := (or .COUCHPOTATO_VERSION "3.0.1")}}
+
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$COUCHPOTATO_UID := (or .COUCHPOTATO_UID 1000)}}
+{{$COUCHPOTATO_GID := (or .COUCHPOTATO_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+MAINTAINER Alexandre ACEBEDO
+
+RUN apk update
+RUN apk add git tzdata unzip python unrar wget tar zsh openssl py-openssl ca-certificates py-cryptography py-enum34 py-cffi py-lxml vim libcap supervisor
+
+ENV LC_ALL               en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timez
+
+RUN addgroup -g {{$COUCHPOTATO_GID}} -S couchpotato
+RUN adduser -G couchpotato -u {{$COUCHPOTATO_UID}} -S -H couchpotato
+
+RUN mkdir -p /opt/couchpotato
+RUN mkdir -p /etc/couchpotato
+RUN mkdir -p /var/lib/couchpotato
+RUN mkdir -p /var/log/supervisor
+
+RUN wget https://github.com/CouchPotato/CouchPotatoServer/archive/build/{{$COUCHPOTATO_VERSION}}.tar.gz -O /tmp/couchpotato.tar.gz
+RUN tar --strip-components=1 -xvzf /tmp/couchpotato.tar.gz -C /opt/couchpotato 
+RUN rm -rf /tmp/couchpotato.tar.gz
+
+COPY ./files/settings.conf /etc/couchpotato/settings.conf
+COPY ./files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R couchpotato:couchpotato /etc/couchpotato
+RUN chown -R couchpotato:couchpotato /var/lib/couchpotato
+RUN chown -R couchpotato:couchpotato /opt/couchpotato
+ 
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
+
+VOLUME ["/var/lib/couchpotato"]
+
+EXPOSE 80
+
+WORKDIR /opt/couchpotato
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+
+TAG couchpotato:{{$COUCHPOTATO_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG couchpotato:latest
+{{end}}

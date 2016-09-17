@@ -1,0 +1,58 @@
+{{$TRAEFIK_VERSION := (or .TRAEFIK_VERSION "1.0.2")}}
+{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$TRAEFIK_UID := (or .TRAEFIK_UID 1000)}}
+{{$TRAEFIK_GID := (or .TRAEFIK_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+
+MAINTAINER Alexandre ACEBEDO
+
+RUN apk update
+RUN apk add tzdata zsh openssl ca-certificates vim libcap supervisor
+
+ENV LC_ALL               en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timezone
+
+RUN addgroup -g {{$TRAEFIK_GID}} -S traefik
+RUN adduser -G traefik -u {{$TRAEFIK_UID}} -S -H traefik 
+
+RUN mkdir -p /etc/traefik
+RUN mkdir -p /var/lib/traefik
+RUN mkdir -p /var/log/supervisor
+
+RUN wget https://github.com/containous/traefik/releases/download/v{{$TRAEFIK_VERSION}}/traefik_linux-{{.ARCH}} -O /usr/local/bin/traefik
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
+COPY files/traefik.conf.tmpl /etc/traefik/traefik.conf.tmpl
+COPY files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R traefik:traefik /etc/traefik
+RUN chown -R traefik:traefik /var/lib/traefik
+
+RUN chmod a+x /usr/local/bin/traefik
+RUN chmod a+x /usr/local/bin/dockerize
+
+RUN setcap 'cap_net_bind_service=+ep' /usr/local/bin/traefik
+
+VOLUME ["unix:///var/run/docker.sock"]
+
+EXPOSE 80 443 8082
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+
+TAG traefik:{{$TRAEFIK_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG traefik:latest
+{{end}}
