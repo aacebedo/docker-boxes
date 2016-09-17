@@ -105,6 +105,6 @@ ENTRYPOINT ["supervisord","-c","/etc/supervisor/supervisord.conf"]
 
 TAG seafile:{{$SEAFILE_VERSION}}
 {{if eq $IS_LATEST "true"}}
-TAG traefik:latest
+TAG seafile:latest
 {{end}}
 
