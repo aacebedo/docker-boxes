@@ -1,0 +1,110 @@
+{{$SEAFILE_VERSION := (or .SEAFILE "6.0.3")}}
+{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$NGINX_VERSION := (or .NGINX_VERSION  "1.11.1")}}
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$SEAFILE_UID := (or .SEAFILE_UID 1000)}}
+{{$SEAFILE_GID := (or .SEAFILE_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM ubuntu:latest
+{{else}}
+{{end}}
+
+MAINTAINER Alexandre ACEBEDO
+
+RUN apt update 
+RUN apt install python2.7 libpython2.7 python-setuptools python-imaging python-ldap python-urllib3 sqlite3 \
+                python python-pip python3 python-pillow sudo \
+                python-dev libldap2-dev zsh less vim libevent-dev zlib1g-dev tzdata \
+                libglib2.0-dev libffi-dev libjansson4 libsasl2-dev wget python3-pip supervisor -qy
+
+RUN pip install python-ldap
+RUN pip3 install --upgrade pip
+RUN pip3 install pexpect
+
+ENV LC_ALL en_US.utf8
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timezone
+
+RUN addgroup --system --gid {{$SEAFILE_GID}} seafile
+RUN adduser --system -gid {{$SEAFILE_GID}} --uid {{$SEAFILE_UID}} seafile 
+
+RUN mkdir -p /opt/seafile
+RUN mkdir -p /etc/seafile
+RUN mkdir -p /var/lib/seafile
+RUN mkdir -p /var/log/seafile
+RUN mkdir -p /var/log/nginx
+RUN mkdir -p /var/run/nginx
+RUN mkdir -p /tmp/nginx
+RUN mkdir -p /tmp/seafile
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
+RUN wget https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{{$SEAFILE_VERSION}}_x86-64.tar.gz -O /tmp/seafile.tar.gz
+RUN tar -xzvf /tmp/seafile.tar.gz -C /opt/seafile
+RUN ln -s /opt/seafile/seafile-server-6.0.3 /opt/seafile/seafile-server-latest
+RUN sed -i "s/while getopts n\:i\:p\:d arg; do/while getopts n\:i\:p\:d\: arg; do/" /opt/seafile/seafile-server-latest/setup-seafile.sh 
+RUN rm -rf /tmp/seafile.tar.gz
+
+RUN apt install build-essential libssl-dev libxml2-dev libpcre3-dev libxslt-dev -qy
+RUN wget http://nginx.org/download/nginx-{{$NGINX_VERSION}}.tar.gz -O /tmp/nginx.tar.gz
+RUN tar --strip-components=1 -xzvf /tmp/nginx.tar.gz -C /tmp/nginx
+RUN rm -rf /tmp/nginx.tar.gz
+WORKDIR /tmp/nginx
+RUN ./configure --with-cc-opt='-O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2' \
+    --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now' \
+    --prefix=/usr/local --conf-path=/etc/seafile/nginx.conf \
+    --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log \
+    --lock-path=/var/run/nginx/nginx.lock --pid-path=/var/run/nginx/nginx.pid --http-client-body-temp-path=/var/run/nginx/body \
+    --http-fastcgi-temp-path=/var/run/nginx --http-proxy-temp-path=/var/run/nginx \
+    --with-pcre-jit --with-http_ssl_module  --with-http_realip_module --with-http_auth_request_module \
+    --with-http_addition_module --with-http_dav_module  --with-http_gunzip_module --with-http_gzip_static_module \
+    --with-mail --with-mail_ssl_module --with-threads
+RUN make -j4 install
+RUN rm -rf /tmp/nginx
+RUN apt remove build-essential libssl-dev libxml2-dev libpcre3-dev libxslt-dev -y --force-yes
+
+COPY files/setup-seahub.py /usr/local/bin/setup-seahub.py
+COPY files/ccnet.conf.tmpl /etc/seafile/ccnet.conf.tmpl
+COPY files/seahub_settings.py.tmpl /etc/seafile/seahub_settings.py.tmpl
+COPY files/nginx.conf.tmpl /etc/seafile/nginx.conf.tmpl
+COPY files/supervisord.conf /etc/supervisor/supervisord.conf
+COPY files/start-seafile_bundle.sh /usr/local/bin/start-seafile_bundle.sh
+COPY files/setup-all.sh /usr/local/bin/setup-all.sh
+COPY files/start-seafile.sh /usr/local/bin/start-seafile.sh
+COPY files/start-seahub.sh /usr/local/bin/start-seahub.sh
+
+RUN ln -sf /etc/seafile /opt/seafile/conf
+RUN ln -sf /var/log/seafile /opt/seafile/logs
+RUN chown -R seafile:seafile /opt/seafile
+RUN chown -R seafile:seafile /etc/seafile
+RUN chown -R seafile:seafile /var/lib/seafile
+RUN chown -R seafile:seafile /var/run/nginx
+RUN chown -R seafile:seafile /var/log/seafile
+RUN chown -R seafile:seafile /var/log/nginx
+RUN chown -R seafile:seafile /tmp/nginx
+RUN chown -R seafile:seafile /tmp/seafile
+
+RUN chmod a+x /usr/local/bin/setup-seahub.py
+RUN chmod a+x /usr/local/bin/start-seafile_bundle.sh
+RUN chmod a+x /usr/local/bin/start-seafile.sh
+RUN chmod a+x /usr/local/bin/start-seahub.sh
+RUN chmod a+x /usr/local/bin/setup-all.sh
+
+RUN setcap 'cap_net_bind_service=+ep' /usr/local/sbin/nginx
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
+
+EXPOSE 80
+
+WORKDIR /opt/seafile
+
+ENTRYPOINT ["supervisord","-c","/etc/supervisor/supervisord.conf"]
+
+TAG seafile:{{$SEAFILE_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG traefik:latest
+{{end}}
+
