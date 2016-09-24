@@ -28,6 +28,8 @@ RUN adduser -G traefik -u {{$TRAEFIK_UID}} -S -H traefik
 RUN mkdir -p /etc/traefik
 RUN mkdir -p /var/lib/traefik
 RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /var/log/traefik
+
 
 RUN wget https://github.com/containous/traefik/releases/download/v{{$TRAEFIK_VERSION}}/traefik_linux-{{.ARCH}} -O /usr/local/bin/traefik
 
@@ -40,6 +42,7 @@ COPY files/supervisord.conf /etc/supervisord.conf
 
 RUN chown -R traefik:traefik /etc/traefik
 RUN chown -R traefik:traefik /var/lib/traefik
+RUN chown -R traefik:traefik /var/log/traefik
 
 RUN chmod a+x /usr/local/bin/traefik
 RUN chmod a+x /usr/local/bin/dockerize
@@ -48,7 +51,7 @@ RUN setcap 'cap_net_bind_service=+ep' /usr/local/bin/traefik
 
 VOLUME ["unix:///var/run/docker.sock"]
 
-EXPOSE 80 443 8082
+EXPOSE 80 443 82
 
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 

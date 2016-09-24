@@ -2,8 +2,8 @@
 # Global configuration
 ################################################################
 
-traefikLogsFile = "/var/lib/traefik/traefik.log"
-accessLogsFile = "/var/lib/traefik/access.log"
+traefikLogsFile = "/var/log/traefik/traefik.log"
+accessLogsFile = "/var/log/traefik/access.log"
 
 #defaultEntryPoints = ["http", "https"]
 
@@ -25,7 +25,7 @@ entryPoint = "https"
 
 onDemand = false
 
-#caServer = "https://acme-staging.api.letsencrypt.org/directory"
+caServer = "https://acme-staging.api.letsencrypt.org/directory"
 
 [[acme.domains]]
    main = "{{.Env.TRAEFIK_DOMAIN}}"
@@ -35,7 +35,7 @@ onDemand = false
 # Web configuration backend
 ################################################################
 [web]
-address = ":8082"
+address = ":82"
 
 ################################################################
 # Docker configuration backend

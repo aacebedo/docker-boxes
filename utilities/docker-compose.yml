@@ -1,12 +1,7 @@
 version: '2'
 services:
   traefik:
-    build:
-      context: ./traefik
-      args:
-        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
-        TRAEFIK_ARCH:           ${TRAEFIK_ARCH}
-        TRAEFIK_VERSION:        ${TRAEFIK_VERSION}
+    image: traefik:latest
     labels:
       - traefik.enable=false
     networks:
@@ -17,20 +12,15 @@ services:
       - TRAEFIK_ADMIN_EMAIL=${TRAEFIK_ADMIN_EMAIL}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${TRAEFIK_DATADIR}:/var/lib/traefik
     ports:
       - ${TRAEFIK_PORT}:80
       - ${TRAEFIK_SECUREPORT}:443
       - ${TRAEFIK_CONTROLPORT}:82
+    hostname: traefik
     restart: always
 
   cfdnsupdater:
-    build:
-      context: ./cfdnsupdater
-      args:
-        DOCKERIZE_ARCH:           ${DOCKERIZE_ARCH}
-        CFDNSUPDATER_ARCH:        ${CFDNSUPDATER_ARCH}
-        CFDNSUPDATER_VERSION:     ${CFDNSUPDATER_VERSION}
+    image: cfdnsupdater:latest
     environment:
       - CFDNSUPDATER_DOMAIN=${CFDNSUPDATER_DOMAIN}
       - CFDNSUPDATER_EMAIL=${CFDNSUPDATER_EMAIL}
@@ -39,19 +29,16 @@ services:
       - CFDNSUPDATER_RECORDTYPES=${CFDNSUPDATER_RECORDTYPES}
       - CFDNSUPDATER_RECORDNAMES=${CFDNSUPDATER_RECORDNAMES}
     restart: always
+    hostname: cfdnsudpater
     labels:
       - traefik.enable=false
    
   dnsdock:
-    build:
-      context: ./dnsdock
-      args:
-        DOCKERIZE_ARCH:      ${DOCKERIZE_ARCH}
-        DNSDOCK_ARCH:        ${DNSDOCK_ARCH}
-        DNSDOCK_VERSION:     ${DNSDOCK_VERSION}
+    image: dnsdock:latest
     environment:
       - DNSDOCK_DOMAIN=${DNSDOCK_DOMAIN}
     restart: always
+    hostname: dnsdock
     labels:
       - traefik.enable=false
     volumes:
