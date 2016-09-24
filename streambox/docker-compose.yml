@@ -1,0 +1,19 @@
+version: '2'
+services:
+  plex:
+    image: plex:latest
+    labels:
+      - traefik.frontend.rule=Host:${PLEX_HOSTNAME}
+      - traefik.frontend.entryPoints=http,https
+    networks:
+      - streambox_network
+    restart: always
+    hostname: ${PLEX_HOSTNAME}
+    volumes:
+      - ${PLEX_MEDIADIR}:/mnt/medias
+      - ${PLEX_DATADIR}:/var/lib/plexmediaserver
+
+networks:
+  streambox_network:
+    external:
+      name: ${STREAMBOX_NETWORK}
