@@ -1,16 +1,11 @@
 version: '2'
 services:
   seafile:
-    build: 
-      context: ./seafile
-      args:
-        DOCKERIZE_ARCH: ${DOCKERIZE_ARCH}
-        SEAFILE_VERSION: ${SEAFILE_VERSION}
-        SEAFILE_URL:    ${SEAFILE_URL}
-        SEAFILE_VERSION: ${SEAFILE_VERSION}
+    image: seafile:latest
     labels:
       - traefik.frontend.rule=Host:${SEAFILE_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
+    hostname: ${SEAFILE_HOSTNAME}
     networks:
       - cloudbox_network
     environment:
@@ -18,15 +13,13 @@ services:
       - SEAFILE_SERVERNAME=${SEAFILE_SERVERNAME}
       - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL}
       - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD}
-      - SEAFILE_PROTOCOL=${SEAFILE_PROTOCOL}
-      - SEAFILE_SMTP_TLS=${SEAFILE_SMTP_TLS}
+
       - SEAFILE_SMTP_SERVER=${SEAFILE_SMTP_SERVER}
       - SEAFILE_SMTP_EMAIL=${SEAFILE_SMTP_EMAIL}
       - SEAFILE_SMTP_PASSWORD=${SEAFILE_SMTP_PASSWORD}
     restart: always
     volumes:
       - ${SEAFILE_DATADIR}:/var/lib/seafile
-      - ${SEAFILE_CONFDIR}:/opt/seafile/conf
 
 networks:
   cloudbox_network:

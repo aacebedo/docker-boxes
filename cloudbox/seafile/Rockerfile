@@ -1,6 +1,5 @@
-{{$SEAFILE_VERSION := (or .SEAFILE "6.0.3")}}
-{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
-{{$NGINX_VERSION := (or .NGINX_VERSION  "1.11.1")}}
+{{$DOCKERIZE_VERSION := "0.2.0"}}
+{{$NGINX_VERSION := "1.11.1"}}
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
 {{$SEAFILE_UID := (or .SEAFILE_UID 1000)}}
@@ -28,7 +27,7 @@ RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timezone
 
 RUN addgroup --system --gid {{$SEAFILE_GID}} seafile
-RUN adduser --system -gid {{$SEAFILE_GID}} --uid {{$SEAFILE_UID}} seafile 
+RUN adduser --system -g seafile --uid {{$SEAFILE_UID}} seafile 
 
 RUN mkdir -p /opt/seafile
 RUN mkdir -p /etc/seafile
@@ -43,7 +42,7 @@ RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_V
 RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
 RUN rm /tmp/dockerize.tar.gz
 
-RUN wget https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{{$SEAFILE_VERSION}}_x86-64.tar.gz -O /tmp/seafile.tar.gz
+RUN wget https://bintray.com/artifact/download/seafile-org/seafile/seafile-server_{{.SEAFILE_VERSION}}_x86-64.tar.gz -O /tmp/seafile.tar.gz
 RUN tar -xzvf /tmp/seafile.tar.gz -C /opt/seafile
 RUN ln -s /opt/seafile/seafile-server-6.0.3 /opt/seafile/seafile-server-latest
 RUN sed -i "s/while getopts n\:i\:p\:d arg; do/while getopts n\:i\:p\:d\: arg; do/" /opt/seafile/seafile-server-latest/setup-seafile.sh 
@@ -100,6 +99,8 @@ RUN setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7
 EXPOSE 80
 
 WORKDIR /opt/seafile
+
+VOLUME ["/var/lib/seafile"]
 
 ENTRYPOINT ["supervisord","-c","/etc/supervisor/supervisord.conf"]
 
