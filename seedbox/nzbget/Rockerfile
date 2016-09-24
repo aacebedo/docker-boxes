@@ -1,6 +1,4 @@
-{{$NZBGET_VERSION := (or .NZBGET_VERSION "16.4")}}
-
-{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$DOCKERIZE_VERSION := "0.2.0"}}
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
 {{$NZBGET_UID := (or .NZBGET_UID 1000)}}
@@ -17,6 +15,7 @@ RUN apk update
 RUN apk add tzdata git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap supervisor
 
 ENV LC_ALL               en_US.utf8
+ENV TERM xterm
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timez
@@ -28,8 +27,9 @@ RUN mkdir -p /etc/nzbget
 RUN mkdir -p /opt/nzbget
 RUN mkdir -p /var/lib/nzbget
 RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /var/log/nzbget
 
-RUN wget  https://github.com/nzbget/nzbget/releases/download/v{{$NZBGET_VERSION}}/nzbget-{{$NZBGET_VERSION}}-bin-linux.run -O /tmp/nzbget-installer
+RUN wget  https://github.com/nzbget/nzbget/releases/download/v{{.NZBGET_VERSION}}/nzbget-{{.NZBGET_VERSION}}-bin-linux.run -O /tmp/nzbget-installer
 RUN chmod a+x /tmp/nzbget-installer
 RUN /tmp/nzbget-installer --destdir /opt/nzbget
 RUN rm /tmp/nzbget-installer
@@ -43,6 +43,7 @@ COPY files/supervisord.conf /etc/supervisord.conf
 
 RUN chown -R nzbget:nzbget /etc/nzbget
 RUN chown -R nzbget:nzbget /var/lib/nzbget
+RUN chown -R nzbget:nzbget /var/log/nzbget
  
 RUN setcap 'cap_net_bind_service=+ep' /opt/nzbget/nzbget
 
@@ -52,7 +53,7 @@ EXPOSE 80
 
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 
-TAG nzbget:{{$NZBGET_VERSION}}
+TAG nzbget:{{.NZBGET_VERSION}}
 {{if eq $IS_LATEST "true"}}
 TAG nzbget:latest
 {{end}}

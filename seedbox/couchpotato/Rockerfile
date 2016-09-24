@@ -1,5 +1,3 @@
-{{$COUCHPOTATO_VERSION := (or .COUCHPOTATO_VERSION "3.0.1")}}
-
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
 {{$COUCHPOTATO_UID := (or .COUCHPOTATO_UID 1000)}}
@@ -28,7 +26,7 @@ RUN mkdir -p /etc/couchpotato
 RUN mkdir -p /var/lib/couchpotato
 RUN mkdir -p /var/log/supervisor
 
-RUN wget https://github.com/CouchPotato/CouchPotatoServer/archive/build/{{$COUCHPOTATO_VERSION}}.tar.gz -O /tmp/couchpotato.tar.gz
+RUN wget https://github.com/CouchPotato/CouchPotatoServer/archive/build/{{.COUCHPOTATO_VERSION}}.tar.gz -O /tmp/couchpotato.tar.gz
 RUN tar --strip-components=1 -xvzf /tmp/couchpotato.tar.gz -C /opt/couchpotato 
 RUN rm -rf /tmp/couchpotato.tar.gz
 
@@ -49,7 +47,7 @@ WORKDIR /opt/couchpotato
 
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 
-TAG couchpotato:{{$COUCHPOTATO_VERSION}}
+TAG couchpotato:{{.COUCHPOTATO_VERSION}}
 {{if eq $IS_LATEST "true"}}
 TAG couchpotato:latest
 {{end}}

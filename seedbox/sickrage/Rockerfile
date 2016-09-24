@@ -1,6 +1,4 @@
-{{$SICKRAGE_VERSION := (or .SICKRAGE_VERSION "2016.09.10-1")}}
-
-{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$DOCKERIZE_VERSION := "0.2.0"}}
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
 {{$SICKRAGE_UID := (or .SICKRAGE_UID 1000)}}
@@ -29,7 +27,7 @@ RUN mkdir -p /etc/sickrage
 RUN mkdir -p /var/lib/sickrage
 RUN mkdir -p /var/log/supervisor
 
-RUN wget https://github.com/SickRage/SickRage/archive/{{$SICKRAGE_VERSION}}.tar.gz -O /tmp/sickrage.tar.gz
+RUN wget https://github.com/SickRage/SickRage/archive/{{.SICKRAGE_VERSION}}.tar.gz -O /tmp/sickrage.tar.gz
 RUN tar --strip-components=1 -xvzf /tmp/sickrage.tar.gz -C /opt/sickrage 
 RUN rm -rf /tmp/sickrage.tar.gz
 
@@ -54,7 +52,7 @@ WORKDIR /opt/sickrage
 
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 
-TAG sickrage:{{$SICKRAGE_VERSION}}
+TAG sickrage:{{.SICKRAGE_VERSION}}
 {{if eq $IS_LATEST "true"}}
 TAG sickrage:latest
 {{end}}

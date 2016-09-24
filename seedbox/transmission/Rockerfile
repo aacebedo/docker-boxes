@@ -1,4 +1,4 @@
-{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$DOCKERIZE_VERSION := "0.2.0"}}
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
 {{$TRANSMISSION_UID := (or .TRANSMISSION_UID 1000)}}
@@ -23,7 +23,6 @@ RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timezone
 
 RUN mkdir -p /etc/transmission
-RUN mkdir -p /opt/transmission
 RUN mkdir -p /var/lib/transmission
 RUN mkdir -p /var/log/supervisor
 

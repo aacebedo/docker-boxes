@@ -1,69 +1,70 @@
 version: '2'
 services:
   sickrage:
-    build: 
-      context: ./sickrage
-      args:
-        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
-        SICKRAGE_VERSION:       ${SICKRAGE_VERSION}
+    image: sickrage:latest 
     labels:
       - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
+    environment:
+      - SICKRAGE_USERNAME=${SICKRAGE_USERNAME}
+      - SICKRAGE_PASSWORD=${SICKRAGE_PASSWORD}
+    hostname: sickrage.${DOMAIN}
     restart: always
     volumes:
-      - ${NZBSDIR}:/mnt/data/downloads/nzbgs
+      - ${NZBSDIR}:/mnt/data/downloads/nzbs
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
       - ${TVSHOWSDIR}:/mnt/data/tvshows
     networks:
-      - seedbox_net
+      - seedbox_network
 
   couchpotato:
-    build: 
-      context: ./couchpotato
-      args:
-        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
-        COUCHPOTATO_VERSION:    ${COUCHPOTATO_VERSION}
+    image: couchpotato:latest
     labels:
       - traefik.frontend.rule=Host:couchpotato.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    hostname: couchpotato.${DOMAIN}
+    environment:
+      - COUCHPOTATO_USERNAME=${COUCHPOTATO_USERNAME}
+      - COUCHPOTATO_PASSWORD=${COUCHPOTATO_PASSWORD}  
     restart: always
     volumes:
       - ${NZBSDIR}:/mnt/data/downloads/nzbs
       - ${TORRENTSDIR}:/mnt/data/downloads/torrents
       - ${MOVIESDIR}:/mnt/data/movies
     networks:
-      - seedbox_net
+      - seedbox_network
 
   nzbget:
-    build: 
-      context: ./nzbget
-      args:
-        DOCKERIZE_ARCH:       ${DOCKERIZE_ARCH}
-        NZBGET_VERSION:       ${NZBGET_VERSION}
+    image: nzbget:latest
     labels:
       - traefik.frontend.rule=Host:nzbget.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    hostname: nzbget.${DOMAIN}
+    environment:
+      - NZBGET_USERNAME=${NZBGET_USERNAME}
+      - NZBGET_PASSWORD=${NZBGET_PASSWORD} 
     restart: always
     volumes:
-      - ${NZBSDIR}:/mnt/data
+      - ${NZBSDIR}:/var/lib/nzbget
     networks:
-      - seedbox_net
+      - seedbox_network
 
   transmission:
-    build: 
-      context: ./transmission
-      args:
-        DOCKERIZE_ARCH:         ${DOCKERIZE_ARCH}
+    image: transmission:latest 
     labels:
       - traefik.frontend.rule=Host:transmission.${DOMAIN}
       - traefik.frontend.entryPoints=http,https
+    hostname: transmission.${DOMAIN}
+    environment:
+      - TRANSMISSION_USERNAME=${TRANSMISSION_USERNAME}
+      - TRANSMISSION_PASSWORD=${TRANSMISSION_PASSWORD}
     restart: always
     volumes:
-      - ${TORRENTSDIR}:/mnt/data
+      - ${TORRENTSDIR}:/var/lib/transmission
     networks:
-      - seedbox_net
+      - seedbox_network
 
 networks:
-  seedbox_net:
+  seedbox_network:
     external:
       name: ${SEEDBOX_NETWORK}
