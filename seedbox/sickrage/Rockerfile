@@ -17,7 +17,7 @@ RUN apk add tzdata git unzip python unrar wget tar zsh openssl py-openssl vim ca
 ENV LC_ALL               en_US.utf8
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
-RUN echo "Europe/Paris" > /etc/timez
+RUN echo "Europe/Paris" > /etc/timezone
 
 RUN addgroup -g {{$SICKRAGE_GID}} -S sickrage
 RUN adduser -G sickrage -u {{$SICKRAGE_UID}} -S -H sickrage

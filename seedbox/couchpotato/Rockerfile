@@ -16,7 +16,7 @@ RUN apk add git tzdata unzip python unrar wget tar zsh openssl py-openssl ca-cer
 ENV LC_ALL               en_US.utf8
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
-RUN echo "Europe/Paris" > /etc/timez
+RUN echo "Europe/Paris" > /etc/timezone
 
 RUN addgroup -g {{$COUCHPOTATO_GID}} -S couchpotato
 RUN adduser -G couchpotato -u {{$COUCHPOTATO_UID}} -S -H couchpotato
