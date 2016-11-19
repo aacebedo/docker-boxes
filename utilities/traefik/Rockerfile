@@ -1,5 +1,4 @@
-{{$TRAEFIK_VERSION := (or .TRAEFIK_VERSION "1.0.2")}}
-{{$DOCKERIZE_VERSION := (or .DOCKERIZE_VERSION "0.2.0")}}
+{{$DOCKERIZE_VERSION := "0.2.0"}}
 
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
@@ -30,8 +29,7 @@ RUN mkdir -p /var/lib/traefik
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/log/traefik
 
-
-RUN wget https://github.com/containous/traefik/releases/download/v{{$TRAEFIK_VERSION}}/traefik_linux-{{.ARCH}} -O /usr/local/bin/traefik
+RUN wget https://github.com/containous/traefik/releases/download/v{{.TRAEFIK_VERSION}}/traefik_linux-{{.ARCH}} -O /usr/local/bin/traefik
 
 RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
 RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
@@ -55,7 +53,7 @@ EXPOSE 80 443 82
 
 ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 
-TAG traefik:{{$TRAEFIK_VERSION}}
+TAG traefik:{{.TRAEFIK_VERSION}}
 {{if eq $IS_LATEST "true"}}
 TAG traefik:latest
 {{end}}

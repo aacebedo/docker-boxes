@@ -4,8 +4,8 @@
 
 traefikLogsFile = "/var/log/traefik/traefik.log"
 accessLogsFile = "/var/log/traefik/access.log"
-
-#defaultEntryPoints = ["http", "https"]
+[web.auth.basic]
+ users = ["${TRAEFIK_ADMIN_AUTH}"]
 
 [entryPoints]
   [entryPoints.http]
@@ -24,8 +24,6 @@ storageFile = "/var/lib/traefik/acme.json"
 entryPoint = "https"
 
 onDemand = false
-
-caServer = "https://acme-staging.api.letsencrypt.org/directory"
 
 [[acme.domains]]
    main = "{{.Env.TRAEFIK_DOMAIN}}"

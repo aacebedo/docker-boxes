@@ -10,6 +10,7 @@ services:
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
       - TRAEFIK_SUBDOMAINS=${TRAEFIK_SUBDOMAINS}
       - TRAEFIK_ADMIN_EMAIL=${TRAEFIK_ADMIN_EMAIL}
+      - TRAEFIK_ADMIN_AUTH=${TRAEFIK_ADMIN_AUTH}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
