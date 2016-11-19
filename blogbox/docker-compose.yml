@@ -1,17 +1,13 @@
 version: '2'
 services:
   ghost:
-    build: 
-      context: ./ghost
-      args:
-        DOCKERIZE_ARCH: ${DOCKERIZE_ARCH}
-        GHOST_VERSION: 0.8.0
+    image: ghost:latest
     labels:
       - traefik.frontend.rule=Host:${GHOST_HOSTNAME}
       - traefik.frontend.entryPoints=http,https
     restart: always
     environment:
-      - GHOST_URL=https://${GHOST_HOSTNAME}
+      - GHOST_HOSTNAME=${GHOST_HOSTNAME}
     volumes:
       - ${GHOST_DATADIR}:/var/lib/ghost
     networks:

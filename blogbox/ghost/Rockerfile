@@ -1,0 +1,57 @@
+{{$DOCKERIZE_VERSION := "0.2.0"}}
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$GHOST_UID := (or .GHOST_UID 1000)}}
+{{$GHOST_GID := (or .GHOST_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+MAINTAINER Alexandre ACEBEDO
+
+RUN apk update
+RUN apk add unzip wget nodejs-lts vim tzdata ca-certificates libcap supervisor
+
+ENV LC_ALL               en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timezone
+
+RUN addgroup -g {{$GHOST_GID}} -S ghost
+RUN adduser -G ghost -u {{$GHOST_UID}} -S -H ghost
+
+RUN mkdir -p /opt/ghost
+RUN mkdir -p /var/lib/ghost
+RUN mkdir -p /var/log/supervisor
+
+RUN wget https://github.com/TryGhost/Ghost/releases/download/{{.GHOST_VERSION}}/Ghost-{{.GHOST_VERSION}}.zip -O /tmp/ghost.zip
+RUN unzip -d /opt/ghost /tmp/ghost.zip
+RUN rm -rf /tmp/ghost.zip
+WORKDIR /opt/ghost
+RUN npm install --production
+
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
+COPY ./files/config.js.tmpl /opt/ghost/config.js.tmpl
+COPY ./files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R ghost:ghost /var/lib/ghost
+RUN chown -R ghost:ghost /opt/ghost
+ 
+RUN setcap 'cap_net_bind_service=+ep' /usr/lib/node_modules/npm/bin/npm-cli.js
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/node
+
+VOLUME ["/var/lib/ghost"]
+
+EXPOSE 80
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+
+TAG ghost:{{.GHOST_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG ghost:latest
+{{end}}
