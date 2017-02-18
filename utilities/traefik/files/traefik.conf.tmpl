@@ -5,7 +5,7 @@
 traefikLogsFile = "/var/log/traefik/traefik.log"
 accessLogsFile = "/var/log/traefik/access.log"
 [web.auth.basic]
- users = ["${TRAEFIK_ADMIN_AUTH}"]
+ users = ["{{.Env.ADMIN_AUTH}}"]
 
 [entryPoints]
   [entryPoints.http]
