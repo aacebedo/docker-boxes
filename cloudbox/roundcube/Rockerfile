@@ -1,3 +1,4 @@
+{{$NGINX_VERSION := "1.11.10"}}
 {{$DOCKERIZE_VERSION := "0.2.0"}}
 {{$IS_LATEST := (or .IS_LATEST "false")}}
 
@@ -12,20 +13,18 @@ FROM easypi/alpine-arm
 MAINTAINER Alexandre ACEBEDO
 
 RUN apk update
-RUN apk add vim tzdata sqlite php7-session php7-fpm php7 php7-zip php7-dom php7-gd git php7-mbstring php7-zlib php7-iconv php7-phar php7-json curl gnupg php7-openssl php7 php7-pdo_sqlite php7-sqlite3 nginx unrar wget tar zsh openssl ca-certificates supervisor
+RUN apk add vim tzdata sqlite php7-session php7-fpm php7 php7-zip php7-dom php7-gd git php7-mbstring php7-zlib php7-iconv php7-phar php7-json curl gnupg php7-openssl php7 php7-pdo_sqlite php7-sqlite3 unrar wget tar zsh openssl ca-certificates supervisor
 ENV LC_ALL               en_US.utf8
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timez
 
-RUN sed -ri 's/listen = .*/listen = \/var\/run\/php7-fpm.sock/' /etc/php7/php-fpm.d/www.conf
-RUN sed -ri 's/user = .*;//' /etc/nginx/nginx.conf
-RUN echo "pid /var/run/nginx.pid;" >> /etc/nginx/nginx.conf
+RUN sed -ri 's/listen = .*/listen = \/var\/run\/php7\/php7-fpm.sock/' /etc/php7/php-fpm.d/www.conf
+RUN sed -ri 's/user = .*//' /etc/php7/php-fpm.d/www.conf
+RUN sed -ri 's/group = .*//' /etc/php7/php-fpm.d/www.conf
+RUN sed -ri 's/;daemonize = yes/daemonize = no/' /etc/php7/php-fpm.d/www.conf
 
-RUN rm /etc/nginx/conf.d/default.conf
 COPY files/supervisord.conf /etc/supervisord.conf
-COPY files/roundcube.conf /etc/nginx/conf.d/roundcube.conf
-COPY files/php7-fpm.conf /etc/nginx/conf.d/php7-fpm.conf
 COPY files/config.inc.php.tmpl /opt/roundcube/config/config.inc.php.tmpl
 COPY files/nginx.conf /etc/nginx/nginx.conf
 
@@ -33,6 +32,10 @@ RUN addgroup -g {{$ROUNDCUBE_GID}} -S roundcube
 RUN adduser -G roundcube -u {{$ROUNDCUBE_UID}} -S -H roundcube
 
 RUN mkdir -p /opt/roundcube
+RUN mkdir -p /var/lib/roundcube
+RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /var/run/php7
+RUN mkdir -p /var/run/nginx
 RUN mkdir -p /var/lib/roundcube
 RUN mkdir -p /var/log/supervisor
 
@@ -50,8 +53,34 @@ RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_V
 RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
 RUN rm /tmp/dockerize.tar.gz
 
+RUN apk add build-base openssl-dev libxml2-dev pcre-dev libxslt-dev
+RUN wget http://nginx.org/download/nginx-{{$NGINX_VERSION}}.tar.gz -O /tmp/nginx.tar.gz
+RUN mkdir /tmp/nginx
+RUN tar --strip-components=1 -xzvf /tmp/nginx.tar.gz -C /tmp/nginx
+RUN rm -rf /tmp/nginx.tar.gz
+WORKDIR /tmp/nginx
+RUN ./configure --with-cc-opt='-O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2' \
+    --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now' \
+    --prefix=/usr/local --conf-path=/etc/nginx/nginx.conf --modules-path=/etc/nginx/modules \
+    --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log \
+    --lock-path=/var/run/nginx/nginx.lock --pid-path=/var/run/nginx/nginx.pid --http-client-body-temp-path=/var/run/nginx/body \
+    --http-fastcgi-temp-path=/var/run/nginx --http-scgi-temp-path=/var/run/nginx/scgi \
+    --http-uwsgi-temp-path=/var/run/nginx/uwsgi --http-proxy-temp-path=/var/run/nginx \
+    --with-pcre-jit --with-http_ssl_module  --with-http_realip_module --with-http_auth_request_module \
+    --with-http_addition_module --with-http_dav_module  --with-http_gunzip_module --with-http_gzip_static_module \
+    --with-mail --with-mail_ssl_module --with-threads
+RUN make -j4 install
+RUN rm -rf /tmp/nginx
+RUN apk del build-base openssl-dev libxml2-dev pcre-dev libxslt-dev
+
 RUN chown -R roundcube:roundcube /var/lib/roundcube
 RUN chown -R roundcube:roundcube /opt/roundcube
+RUN chown -R roundcube:roundcube /var/log/php7
+RUN chown -R roundcube:roundcube /var/log/nginx
+RUN chown -R roundcube:roundcube /var/run/php7
+RUN chown -R roundcube:roundcube /var/run/nginx
+
+RUN setcap 'cap_net_bind_service=+ep' /usr/local/sbin/nginx
  
 VOLUME ["/var/lib/roundcube"]
 
@@ -63,4 +92,3 @@ TAG roundcube:{{.ROUNDCUBE_VERSION}}
 {{if eq $IS_LATEST "true"}}
 TAG roundcube:latest
 {{end}}
-
