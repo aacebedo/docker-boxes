@@ -14,7 +14,7 @@ MAINTAINER Alexandre ACEBEDO
 RUN apk update
 RUN apk add tzdata git unzip python unrar wget tar zsh openssl py-openssl vim ca-certificates libcap supervisor
 
-ENV LC_ALL               en_US.utf8
+ENV LC_ALL  en_US.utf8
 ENV TERM xterm
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime

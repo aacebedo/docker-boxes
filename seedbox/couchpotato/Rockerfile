@@ -13,7 +13,7 @@ MAINTAINER Alexandre ACEBEDO
 RUN apk update
 RUN apk add git tzdata unzip python unrar wget tar zsh openssl py-openssl ca-certificates py-cryptography py-enum34 py-cffi py-lxml vim libcap supervisor
 
-ENV LC_ALL               en_US.utf8
+ENV LC_ALL en_US.utf8
 
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timezone
@@ -45,7 +45,7 @@ EXPOSE 80
 
 WORKDIR /opt/couchpotato
 
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
+ENTRYPOINT ["supervisord"]
 
 TAG couchpotato:{{.COUCHPOTATO_VERSION}}
 {{if eq $IS_LATEST "true"}}
