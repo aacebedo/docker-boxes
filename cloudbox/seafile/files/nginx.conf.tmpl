@@ -48,7 +48,7 @@ http {
 
   server {
     listen      80 default;
-    server_name {{.Env.SEAFILE_HOSTNAME}};
+    server_name {{.Env.HOSTNAME}};
 
     proxy_set_header X-Forwarded-For $remote_addr;
 
