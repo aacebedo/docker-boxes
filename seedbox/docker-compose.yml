@@ -6,8 +6,8 @@ services:
       - traefik.frontend.rule=Host:sickrage.${DOMAIN} 
       - traefik.frontend.entryPoints=http,https
     environment:
-      - SICKRAGE_USERNAME=${SICKRAGE_USERNAME}
-      - SICKRAGE_PASSWORD=${SICKRAGE_PASSWORD}
+      - USERNAME=${SICKRAGE_USERNAME}
+      - PASSWORD=${SICKRAGE_PASSWORD}
     hostname: sickrage.${DOMAIN}
     restart: always
     volumes:
@@ -24,8 +24,8 @@ services:
       - traefik.frontend.entryPoints=http,https
     hostname: couchpotato.${DOMAIN}
     environment:
-      - COUCHPOTATO_USERNAME=${COUCHPOTATO_USERNAME}
-      - COUCHPOTATO_PASSWORD=${COUCHPOTATO_PASSWORD}  
+      - USERNAME=${COUCHPOTATO_USERNAME}
+      - PASSWORD=${COUCHPOTATO_PASSWORD}  
     restart: always
     volumes:
       - ${NZBSDIR}:/mnt/data/downloads/nzbs
@@ -41,8 +41,8 @@ services:
       - traefik.frontend.entryPoints=http,https
     hostname: nzbget.${DOMAIN}
     environment:
-      - NZBGET_USERNAME=${NZBGET_USERNAME}
-      - NZBGET_PASSWORD=${NZBGET_PASSWORD} 
+      - USERNAME=${NZBGET_USERNAME}
+      - PASSWORD=${NZBGET_PASSWORD} 
     restart: always
     volumes:
       - ${NZBSDIR}:/var/lib/nzbget
@@ -56,8 +56,8 @@ services:
       - traefik.frontend.entryPoints=http,https
     hostname: transmission.${DOMAIN}
     environment:
-      - TRANSMISSION_USERNAME=${TRANSMISSION_USERNAME}
-      - TRANSMISSION_PASSWORD=${TRANSMISSION_PASSWORD}
+      - USERNAME=${TRANSMISSION_USERNAME}
+      - PASSWORD=${TRANSMISSION_PASSWORD}
     restart: always
     volumes:
       - ${TORRENTSDIR}:/var/lib/transmission
