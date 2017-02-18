@@ -17,7 +17,7 @@ accessLogsFile = "/var/log/traefik/access.log"
    [entryPoints.https.tls]
 
 [acme]
-email = "{{.Env.TRAEFIK_ADMIN_EMAIL}}"
+email = "{{.Env.ADMIN_EMAIL}}"
 
 storageFile = "/var/lib/traefik/acme.json"
 
@@ -26,8 +26,8 @@ entryPoint = "https"
 onDemand = false
 
 [[acme.domains]]
-   main = "{{.Env.TRAEFIK_DOMAIN}}"
-   sans = [{{.Env.TRAEFIK_SUBDOMAINS}}]
+   main = "{{.Env.DOMAIN}}"
+   sans = [{{.Env.SUBDOMAINS}}]
 
 ################################################################
 # Web configuration backend
