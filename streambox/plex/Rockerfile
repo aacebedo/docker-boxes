@@ -7,12 +7,11 @@ FROM ubuntu:latest
 {{else}}
 {{end}}
 MAINTAINER Alexandre ACEBEDO
-
 RUN apt update
 RUN apt upgrade -qy
 RUN apt install wget dbus avahi-daemon wget supervisor libminizip1 vim less -qy
-{{$SPLITTED := split .PLEX_VERSION "_"}}
-RUN wget https://downloads.plex.tv/plex-media-server/{{index $SPLITTED 0}}/plexmediaserver_{{index $SPLITTED 0}}_{{index $SPLITTED 1}}.deb -O /tmp/plexmediaserver.deb
+
+RUN wget https://downloads.plex.tv/plex-media-server/{{.PLEX_VERSION}}/plexmediaserver_{{.PLEX_VERSION}}_{{.ARCH}}.deb -O /tmp/plexmediaserver.deb
 
 RUN mkdir -p /var/run/dbus
 
@@ -20,19 +19,19 @@ RUN mkdir -p /var/lib/plexmediaserver
 RUN ln -s /var/lib/plexmediaserver /home/plex
 
 RUN addgroup --system --gid {{$PLEX_GID}} plex
-RUN adduser --system -g plex --uid {{$PLEX_UID}} plex
+RUN adduser --system --ingroup plex --uid {{$PLEX_UID}} plex
 RUN chown -R plex:plex /home/plex
 
 RUN dpkg -i /tmp/plexmediaserver.deb
 RUN rm /tmp/plexmediaserver.deb
 
-COPY files/supervisord.conf /etc/supervisor/supervisord.conf
+COPY files/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 32400 32400/udp 32469 32469/udp 5353/udp 1900/udp 
 
 VOLUME ["/mnt/medias","/var/lib/plexmediaserver"]
 
-ENTRYPOINT ["supervisord","-c","/etc/supervisord.conf"]
+ENTRYPOINT ["supervisord""]
 
 TAG plex:{{.PLEX_VERSION}}
 {{if eq $IS_LATEST "true"}}
