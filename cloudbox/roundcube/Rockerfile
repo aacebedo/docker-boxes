@@ -32,7 +32,6 @@ RUN addgroup -g {{$ROUNDCUBE_GID}} -S roundcube
 RUN adduser -G roundcube -u {{$ROUNDCUBE_UID}} -S -H roundcube
 
 RUN mkdir -p /opt/roundcube
-RUN mkdir -p /var/lib/roundcube
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/run/php7
 RUN mkdir -p /var/run/nginx
