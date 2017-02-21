@@ -1,0 +1,29 @@
+version: '2'
+services:
+  ghost:
+    image: ghost:latest
+    labels:
+      - traefik.frontend.rule=Host:${GHOST_HOSTNAME}
+      - traefik.frontend.entryPoints=http,https
+    restart: always
+    environment:
+      - GHOST_HOSTNAME=${GHOST_HOSTNAME}
+    volumes:
+      - ${GHOST_DATADIR}:/var/lib/ghost
+    networks:
+      - blogbox_network
+  wordpress:
+    image: wordpress:latest
+    labels:
+      - traefik.frontend.rule=Host:${WORDPRESS_HOSTNAME}
+      - traefik.frontend.entryPoints=http
+    restart: always
+    volumes:
+      - ${WORDPRESS_HOSTNAME}:/var/lib/wordpress
+    networks:
+      - blogbox_network
+      
+networks:
+  blogbox_network:
+    external:
+      name: ${BLOGBOX_NETWORK}
