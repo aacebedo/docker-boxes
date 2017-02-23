@@ -12,14 +12,18 @@ services:
       - ${GHOST_DATADIR}:/var/lib/ghost
     networks:
       - blogbox_network
+      
   wordpress:
     image: wordpress:latest
     labels:
       - traefik.frontend.rule=Host:${WORDPRESS_HOSTNAME}
-      - traefik.frontend.entryPoints=http
+      - traefik.frontend.entryPoints=http,https
+      - traefik.frontend.passHostHeader=true
     restart: always
+    environment:
+      - HOSTNAME=${WORDPRESS_HOSTNAME}
     volumes:
-      - ${WORDPRESS_HOSTNAME}:/var/lib/wordpress
+      - ${WORDPRESS_DATADIR}:/var/lib/wordpress
     networks:
       - blogbox_network
       

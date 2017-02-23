@@ -6,6 +6,7 @@ export GHOST_HOSTNAME="http://blog.example.com"
 export GHOST_DATADIR="/mnt/data/ghost"
 
 export WORDPRESS_VERSION="4.7.2"
+export WORDPRESS_HOSTNAME="blog.example.com"
 export WORDPRESS_DATADIR="/mnt/data/wordpress"
 
 export BLOGBOX_NETWORK="traefik_network"

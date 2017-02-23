@@ -92,7 +92,9 @@ http {
   server {
     listen 80 default_server;
     listen [::]:80 default_server;
-
+    
+    server_name {{.Env.HOSTNAME}};
+    
     root /opt/wordpress;
  
     index index.php;

@@ -27,6 +27,10 @@ ENV LC_ALL en_US.utf8
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN echo "Europe/Paris" > /etc/timez
 
+RUN wget https://github.com/aacebedo/dockerize/releases/download/v{{$DOCKERIZE_VERSION}}/dockerize-linux-{{.ARCH}}-v{{$DOCKERIZE_VERSION}}.tar.gz -O /tmp/dockerize.tar.gz
+RUN tar -xzvf /tmp/dockerize.tar.gz -C /usr/local/bin
+RUN rm /tmp/dockerize.tar.gz
+
 RUN apk add build-base openssl-dev libxml2-dev pcre-dev libxslt-dev
 RUN wget http://nginx.org/download/nginx-{{$NGINX_VERSION}}.tar.gz -O /tmp/nginx.tar.gz
 RUN mkdir /tmp/nginx
@@ -53,7 +57,7 @@ RUN sed -ri 's/group = .*//' /etc/php7/php-fpm.d/www.conf
 RUN sed -ri 's/;daemonize = yes/daemonize = no/' /etc/php7/php-fpm.d/www.conf
 
 COPY files/supervisord.conf /etc/supervisord.conf
-COPY files/nginx.conf /etc/nginx/nginx.conf
+COPY files/nginx.conf.tmpl /etc/nginx/nginx.conf.tmpl
 
 RUN addgroup -g {{$WORDPRESS_GID}} -S wordpress
 RUN adduser -G wordpress -u {{$WORDPRESS_UID}} -S -H wordpress
