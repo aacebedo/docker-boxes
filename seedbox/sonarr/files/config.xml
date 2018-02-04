@@ -1,0 +1,13 @@
+<Config>
+  <LogLevel>Info</LogLevel>
+  <Port>80</Port>
+  <UrlBase></UrlBase>
+  <BindAddress>*</BindAddress>
+  <SslPort>443</SslPort>
+  <EnableSsl>True</EnableSsl>
+  <LaunchBrowser>True</LaunchBrowser>
+  <Branch>master</Branch>
+  <SslCertHash></SslCertHash>
+  <UpdateMechanism>BuiltIn</UpdateMechanism>
+  <UpdateAutomatically>True</UpdateAutomatically>
+</Config>

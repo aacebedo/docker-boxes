@@ -1,0 +1,57 @@
+{{$IS_LATEST := (or .IS_LATEST "false")}}
+
+{{$SONARR_UID := (or .SONARR_UID 1000)}}
+{{$SONARR_GID := (or .SONARR_GID 1000)}}
+
+{{if eq .ARCH "amd64"}}
+FROM alpine:latest
+{{else}}
+FROM easypi/alpine-arm
+{{end}}
+MAINTAINER Alexandre ACEBEDO
+
+RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN apk update
+RUN apk add mediainfo wget supervisor mono tzdata unzip python unrar tar zsh openssl py-openssl vim ca-certificates libcap
+
+ENV LC_ALL en_US.utf8
+
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN echo "Europe/Paris" > /etc/timezone
+
+RUN addgroup -g {{$SONARR_GID}} -S sonarr
+RUN adduser -G sonarr -u {{$SONARR_UID}} -S -H sonarr
+
+RUN mkdir -p /opt/sonarr
+RUN mkdir -p /home/sonarr/.config
+RUN mkdir -p /var/lib/sonarr
+RUN ln -s /var/lib/sonarr /home/sonarr/.config/NzbDrone
+RUN mkdir -p /var/log/supervisor
+
+RUN wget http://download.sonarr.tv/v2/master/mono/NzbDrone.master.{{.SONARR_VERSION}}.mono.tar.gz -O /tmp/sonarr.tar.gz
+RUN tar --strip-components=1 -xvzf /tmp/sonarr.tar.gz -C /opt/sonarr 
+RUN rm -rf /tmp/sonarr.tar.gz
+
+COPY files/supervisord.conf /etc/supervisord.conf
+
+RUN chown -R sonarr:sonarr /home/sonarr
+RUN chown -R sonarr:sonarr /opt/sonarr
+RUN chown -R sonarr:sonarr /var/lib/sonarr
+ 
+COPY files/config.xml /var/lib/sonarr/config.xml
+
+RUN setcap 'cap_net_bind_service=+ep' /usr/bin/mono-sgen
+
+VOLUME ["/var/lib/sonarr"]
+
+EXPOSE 80
+
+WORKDIR /opt/sonarr
+
+ENTRYPOINT ["supervisord"]
+
+TAG sonarr:{{.SONARR_VERSION}}
+{{if eq $IS_LATEST "true"}}
+TAG sonarr:latest
+{{end}}
+
