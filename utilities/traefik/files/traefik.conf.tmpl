@@ -19,15 +19,17 @@ accessLogsFile = "/var/log/traefik/access.log"
 [acme]
 email = "{{.Env.ADMIN_EMAIL}}"
 
-storageFile = "/var/lib/traefik/acme.json"
+storage = "/var/lib/traefik/acme.json"
 
 entryPoint = "https"
-
-onDemand = false
 
 [[acme.domains]]
    main = "{{.Env.DOMAIN}}"
    sans = [{{.Env.SUBDOMAINS}}]
+
+[acme.httpChallenge]
+
+entryPoint = "http"
 
 ################################################################
 # Web configuration backend
